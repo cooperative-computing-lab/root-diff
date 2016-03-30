@@ -8,9 +8,11 @@ PRE_PROC=root-config --cflags --glibs
 OBJS=$(SRC_DIR)/$(NAME).cpp\
 	 $(SRC_DIR)/$(DEP_CLASS).cpp
 
+
 all: $(BIN_DIR)/$(NAME)
-	
+
 $(BIN_DIR)/$(NAME):$(OBJS) 
+	@mkdir $(BIN_DIR)
 	$(CC) -I$(SRC_DIR) $^ -o $@ `$(PRE_PROC)` 
 
 .PHONY: clean
