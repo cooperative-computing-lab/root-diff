@@ -210,21 +210,3 @@ bool Exact_comparator::root_file_cmp (char *fn1, char *fn2)
     }
     return is_equal;
 }
-
-//int main()
-//{
-//    Logic_comparator lc;
-//    Strict_comparator sc;
-//    Exact_comparator ec;
-//    char *fn1 = new char[strlen("f3")], *fn2 = new char[strlen("f2")];  
-//    strncpy(fn1, "f3", strlen("f3"));
-//    strncpy(fn2, "f2", strlen("f2"));
-//    bool is_equal = ec.root_file_cmp(fn1, fn2); 
-//    if (is_equal) {
-//        cout << "f1 is EQUAL to f2" << endl;
-//    } else {
-//        cout << "f1 is NOT EQUAL to f2" << endl;
-//    }
-//    delete fn1, fn2;
-//    return 0;
-//}
