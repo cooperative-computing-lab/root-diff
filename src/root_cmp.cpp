@@ -4,7 +4,7 @@
 
 void usage() {
     cout << endl;
-    cout << "Use: ./root_cmp [options] -- command-line-and-options" << endl;
+    cout << "Use: root_cmp [options] -- command-line-and-options" << endl;
     cout << endl;
     cout << "-l         Specify comparison level (i.e. logic, exact, strict)." << endl;
     cout << "-f         Specify input files (i.e. -f file1,file2)." << endl;
@@ -13,18 +13,22 @@ void usage() {
 int main(int argc, char *argv[]) {
 
     bool is_equal = true;
+    bool no_opts = true;
     int opt = 0;
     string class_type = "exact";
     char *tmp_f_name = NULL, *fn1 = NULL, *fn2 = NULL;
     while((opt = getopt(argc, argv, "hf:l:")) != -1) {
         switch(opt) {
             case 'l':
+                no_opts = false;
                 class_type.assign(optarg);
                 break;
             case 'h':
+                no_opts = false;
                 usage();
                 exit(0);
             case 'f':
+                no_opts = false;
                 tmp_f_name = strtok(optarg, ",");
                 if (!tmp_f_name) {
                     cout << "Please specify two root files." << endl;
@@ -39,11 +43,18 @@ int main(int argc, char *argv[]) {
                 fn2 = strdup(tmp_f_name);
                 break;
             default:
+                no_opts = false;
                 usage();
                 goto error;
         }
+        
     }
-    
+
+    if(no_opts) {
+        usage();
+        goto error;
+    }
+
     if (!class_type.compare("exact")) {
         Exact_comparator ec;
         is_equal = ec.root_file_cmp(fn1, fn2);

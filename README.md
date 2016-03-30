@@ -1,4 +1,13 @@
-##CMS root toolkits
+##ROOT DIFF
+
+This program can be used to compare two root files. 
+There are three levels of comparison 
+
+1. logic - compare the hierarchical structure of two root files.
+2. strict - root files should be logic equivalence and objects from 
+two root files should be equal to each other on byte level.
+3. exact - root files should be strictly equivalence and objects from 
+two root files should have same timestamp.
 
 This program can only on built on crc machines.
 Before build please remove the gcc module and load the 
