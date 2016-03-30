@@ -12,7 +12,7 @@ OBJS=$(SRC_DIR)/$(NAME).cpp\
 all: $(BIN_DIR)/$(NAME)
 
 $(BIN_DIR)/$(NAME):$(OBJS) 
-	@mkdir $(BIN_DIR)
+	@if [ ! -d "$(BIN_DIR)" ]; then mkdir $(BIN_DIR); fi
 	$(CC) -I$(SRC_DIR) $^ -o $@ `$(PRE_PROC)` 
 
 .PHONY: clean
