@@ -6,7 +6,7 @@ import ROOT
 
 parser = argparse.ArgumentParser(description='Create benchmark ROOT files.')
 parser.add_argument('-m', choices=['random', 'fixed'], help='make output random or fixed', dest='mode')
-parser.add_argument('-f', nargs=1, dest='fn')
+parser.add_argument('-f', nargs=1, dest='fn', help='name of output file')
 args = parser.parse_args()
 print args.fn
 
