@@ -5,10 +5,9 @@ import numpy as np
 import ROOT
 
 parser = argparse.ArgumentParser(description='Create benchmark ROOT files.')
-parser.add_argument('-m', choices=['random', 'fixed'], help='make output random or fixed', dest='mode')
-parser.add_argument('-f', nargs=1, dest='fn')
+parser.add_argument('mode', choices=['random', 'fixed'], help='make output random or fixed')
+parser.add_argument('filename', help='name of output file')
 args = parser.parse_args()
-print args.fn
 
 def create(file, dir, label, shift):
     file.cd(dir)
@@ -30,7 +29,7 @@ def create(file, dir, label, shift):
 
     file.Write()
 
-f = ROOT.TFile(args.fn[0], 'RECREATE')
+f = ROOT.TFile(args.filename, 'RECREATE')
 f.mkdir('example')
 
 v = ROOT.TLorentzVector(1.0, 2.0, 3.0, 4.0)
