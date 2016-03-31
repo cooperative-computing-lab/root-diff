@@ -25,8 +25,8 @@ two root files, more details can be found through `bin/root_cmp -h`
 
 Example:
 
-`bin/root_cmp -f sample_root_files/f1 sample_root_files/f2`
+`bin/root_cmp -f sample_root_files/f1,sample_root_files/f2`
 
-`bin/root_cmp -l logic -f sample_root_files/f1 sample_root_files/f2`
+`bin/root_cmp -l logic -f sample_root_files/f1,sample_root_files/f2`
 
 
