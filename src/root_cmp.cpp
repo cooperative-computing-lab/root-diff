@@ -1,5 +1,5 @@
 #include <unistd.h>
-#include <string.h>
+#include <cstring>
 #include "root_comparator.h"
 
 void usage() {
