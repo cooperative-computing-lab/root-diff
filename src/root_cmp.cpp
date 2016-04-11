@@ -6,22 +6,31 @@ void usage() {
     cout << endl;
     cout << "Use: root_cmp [options] -- command-line-and-options" << endl;
     cout << endl;
+    cout << "-l         Write details to log (i.e. -l /path/to/logfile)" << endl;
     cout << "-m         Specify compare mode (i.e. CC, UC, RC)." << endl;
     cout << "-f         Specify input files (i.e. -f file1,file2)." << endl;
 }
 
 int main(int argc, char *argv[]) {
 
-    bool is_equal = true;
+    Agree_lv al = Not_eq;
     bool no_opts = true;
     int opt = 0;
     string compare_mode = "CC";
+    string cmp_mode_str = "COMPRESS COMPARE";
+    string agree_lv = "LOGICAL";
+    string log_fn = string();
     char *tmp_f_name = NULL, *fn1 = NULL, *fn2 = NULL;
     Rootfile_comparator rfc = Rootfile_comparator();
 
-    while((opt = getopt(argc, argv, "hf:m:")) != -1) {
+    while((opt = getopt(argc, argv, "hf:m:l:")) != -1) {
 
         switch(opt) {
+            case 'l':
+                no_opts = false;
+                log_fn = optarg;
+                break;
+
             case 'm':
                 no_opts = false;
                 compare_mode = optarg;
@@ -61,22 +70,64 @@ int main(int argc, char *argv[]) {
         goto error;
     }
 
-    is_equal = rfc.root_file_cmp(fn1, fn2, compare_mode.c_str());
-    
-    if(is_equal) {
-        printf("%s is EQUAL to %s\n", fn1, fn2);
+    al = rfc.root_file_cmp(fn1, fn2, compare_mode.c_str());
+
+    switch(al) {
+        case Logic_eq:
+            break;
+        case Strict_eq:
+            agree_lv = "STRICT"; 
+            break;
+        case Exact_eq:
+            agree_lv = "EXACT";
+            break;
+        default:
+            cout << "Unknown Agreement Level" << endl;
+            goto error;
     }
 
+    if (!compare_mode.compare("UC")) {
+        cmp_mode_str = "UNCOMPRESSED COMPARE";
+    } else if (!compare_mode.compare("RC")) {
+        cmp_mode_str = "REPRODUCE COMPARE";
+    }
+
+    // Output the comparison result
+    cout << "-----------------------------------------------------------" << endl;
+    cout << "file 1: " << fn1 << endl;
+    cout << "file 2: " << fn2 << endl;
+    cout << "The comparison mode is: " << cmp_mode_str << endl;
+    
+    if(al == Not_eq) {
+        cout << "file 1 is NOT EQUAL to file 2." << endl;
+    } else {
+        cout << "file 1 is EQUAL to file 2." << endl;
+        cout << "The agreement level is " << agree_lv << endl;
+    }
+    // if log file is specified
+    if (!log_fn.empty()) { 
+        cout << "Details can be found in " << log_fn << endl;
+    }
+    cout << "-----------------------------------------------------------" << endl;
+
     if(fn1 != NULL) {
-        delete fn1;
+        delete [] fn1;
     } 
 
     if(fn2 != NULL) {
-        delete fn2;
+        delete [] fn2;
     }
 
     exit(0);
 
 error:
+    if(fn1 != NULL) {
+        delete [] fn1;
+    } 
+
+    if(fn2 != NULL) {
+        delete [] fn2;
+    }
     exit(1);
 }
+

@@ -2,9 +2,11 @@
 #define __ROOT_OBJ_COMP_H__
 
 #include <iostream>
+#include "RZip.h"
 #include "TFile.h"
 #include "TKey.h"
 #include "TBuffer.h"
+#include "dbg.h"
 #include "TCollection.h"
 
 using namespace std;
