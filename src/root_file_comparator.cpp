@@ -1,14 +1,15 @@
 #include "root_file_comparator.h"
 
-Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2, const char *mode) 
+Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2, 
+        const char *mode, const char *log_fn) 
 {
     Rootobj_comparator *roc;   
 
-    if (strcmp(mode, "CC") == 0) {
+    if (!strcmp(mode, "CC")) {
         roc = new Cmprs_comparator();
-    } else if (strcmp(mode, "UC") == 0) {
+    } else if (!strcmp(mode, "UC")) {
         roc = new Uncmprs_comparator();
-    } else if (strcmp(mode, "RC") == 0) {
+    } else if (!strcmp(mode, "RC")) {
         roc = new Reprod_comparator();
     } else {
         cout << "unknown option" <<  mode << endl; 
@@ -23,6 +24,14 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2, const char *
     TKey *k_1, *k_2;
 
     bool logic_eq = true, strict_eq = true, exact_eq = true;
+   
+    ofstream log_f;
+    if (!log_f) { 
+        cout << "cannot create log file" << endl;
+    }
+    log_f.open(log_fn);
+
+    clock_t begin = clock();
 
     while(true) {
         k_1 = (TKey *)n_1();
@@ -33,32 +42,57 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2, const char *
         }
 
         if (!roc->logic_cmp(k_1, k_2)) {
-            //cout << fn_1 << " is NOT LOGICALLY EQUAL to " << fn_2 << endl;
+
+            log_f << k_1->GetName() << " object of " << k_1->GetClassName() << 
+                " class in " << fn_1 << " at " << k_1->GetSeekKey() 
+                << " is NOT LOGICALLY EQUAL to " << k_2->GetName() << " object of " 
+                << k_2->GetClassName() << " class in " << fn_2 << " at " 
+                << k_2->GetSeekKey() << endl;
+
             logic_eq = false;
             strict_eq = false;
-            exact_eq = false; 
+            exact_eq = false;
+            break; 
         }
 
         if (!roc->strict_cmp(k_1, k_2)) {
-            //cout << fn_1 << " is NOT STRICTLY EQUAL to " << fn_2 << endl;
-            cout << k_1->GetClassName() << " is NOT EQUAL to " << k_2->GetClassName() << endl;
+            log_f << k_1->GetName() << " object of " << k_1->GetClassName() << 
+                " class in " << fn_1 << " at " << k_1->GetSeekKey() 
+                << " is NOT STRICTLY EQUAL to " << k_2->GetName() << " object of " 
+                << k_2->GetClassName() << " class in " << fn_2 << " at " 
+                << k_2->GetSeekKey() << endl;
+            
             strict_eq = false;    
             exact_eq = false;
         }
 
         if (!roc->exact_cmp(k_1, k_2)) {
-            //cout << fn_1 << " is NOT EXACTLY EQUAL to " << fn_2 << endl;
+
+            log_f << k_1->GetName() << " object of " << k_1->GetClassName() << 
+                " class in " << fn_1 << " at " << k_1->GetSeekKey() 
+                << " is NOT EXACTLY EQUAL to " << k_2->GetName() << " object of " 
+                << k_2->GetClassName() << " class in " << fn_2 << " at " 
+                << k_2->GetSeekKey() << endl;
+
             exact_eq = false;
         }
     } 
 
     if ((!k_1 && k_2) || (k_1 && !k_2)) {
-        cout << "Number of objects in " << fn_1 << " and " << fn_2 << " are not equal."<< endl;
+        log_f << "Number of objects in " << fn_1 << " and " << fn_2 << " are not equal."<< endl;
+        log_f.close();
         delete roc; 
         return Not_eq;
     }
 
     delete roc;
+
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    log_f << "Comparison took: " <<  elapsed_secs << endl;
+
+    log_f.close();
+
     if (!logic_eq && !strict_eq && !exact_eq){
         return Not_eq;
     } else if (exact_eq){

@@ -70,7 +70,10 @@ int main(int argc, char *argv[]) {
         goto error;
     }
 
-    al = rfc.root_file_cmp(fn1, fn2, compare_mode.c_str());
+    if (log_fn.empty()) { 
+        log_fn = "root_diff.log";
+    }
+    al = rfc.root_file_cmp(fn1, fn2, compare_mode.c_str(), log_fn.c_str());
 
     switch(al) {
         case Logic_eq:
@@ -105,9 +108,8 @@ int main(int argc, char *argv[]) {
         cout << "The agreement level is " << agree_lv << endl;
     }
     // if log file is specified
-    if (!log_fn.empty()) { 
-        cout << "Details can be found in " << log_fn << endl;
-    }
+    
+    cout << "Details can be found in " << log_fn << endl;
     cout << "-----------------------------------------------------------" << endl;
 
     if(fn1 != NULL) {
