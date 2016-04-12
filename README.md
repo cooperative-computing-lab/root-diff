@@ -37,11 +37,45 @@ examples can be found in `sample_root_files` folder.
 1. Two root files are exactlly equal to each other 
 
         bin/root_cmp -m CC -l r1_r1.log -f sample_root_files/r1.root,sample_root_files/r1.root
+    
+    The expected output will be:
+        
+        -----------------------------------------------------------
+        file 1: sample_root_files/r1.root
+        file 2: sample_root_files/r1.root
+        The comparison mode is: COMPRESS COMPARE
+        file 1 is EQUAL to file 2.
+        The agreement level is EXACT
+        Details can be found in r1_r1.log
+        -----------------------------------------------------------
 
 2. Two root files are stricly equal to each other
 
         bin/root_cmp -m UC -l fx1_fx2.log -f sample_root_files/fx1.root,sample_root_files/fx2.root
 
+    The expected output will be:
+       
+        -----------------------------------------------------------
+        file 1: sample_root_files/fx1.root
+        file 2: sample_root_files/fx2.root
+        The comparison mode is: COMPRESS COMPARE
+        file 1 is EQUAL to file 2.
+        The agreement level is STRICT
+        Details can be found in fx1_fx2.log
+        -----------------------------------------------------------
+                         
 3. Two root files are logically equal to each other
 
         bin/root_cmp -m CC -l r1_r2.log -f sample_root_files/r1.root,sample_root_files/r2.root
+
+    The expected output will be:
+
+        -----------------------------------------------------------
+        file 1: sample_root_files/r1.root
+        file 2: sample_root_files/r2.root
+        The comparison mode is: COMPRESS COMPARE
+        file 1 is EQUAL to file 2.
+        The agreement level is LOGICAL
+        Details can be found in r1_r2.log
+        -----------------------------------------------------------
+
