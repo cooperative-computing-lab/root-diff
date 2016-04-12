@@ -1,32 +1,47 @@
 ##ROOT DIFF
 
-This program can be used to compare two root files. 
-There are three levels of comparison 
+This program can be used to compare two root files.
 
-1. logic - compare the hierarchical structure of two root files.
-2. strict - root files should be logic equivalence and objects from 
+There are three available mode for comparing
+
+1. **CC** - COMPRESSED COMPARE, which compare the compressed object buffer.
+2. **UC** - UNCOMPRESSED COMPARE, which uncompress the object buffer and compare. 
+3. **RC** - REPRODUCED COMPARE, which reproduce objects, serialize them 
+to byte array and compare.(**NOT IMPLEMENT YET**)
+ 
+And there are three levels of agreement  
+
+1. **LOGIC** - compare the hierarchical structure of two root files.
+2. **STRICT** - root files should be logic equivalence and objects from 
 two root files should be equal to each other on byte level.
-3. exact - root files should be strictly equivalence and objects from 
+3. **EXACT** - root files should be strictly equivalence and objects from 
 two root files should have same timestamp.
 
-This program can only on built on crc machines.
-Before build please remove the gcc module and load the 
+This program can only be built on crc.nd.edu.
+Before building please remove the gcc module and load the 
 root, python/2.7.8 module by typing following commands:
 
-    module rm gcc
-    module load root python/2.7.8
+        module rm gcc
+        module load root python/2.7.8
 
 Then you can build the program by executing
 
-    make
+        make
 
-After build, `root_cmp` in src/ can be used to compare the 
+After build, `root_cmp` in bin/ can be used to compare the 
 two root files, more details can be found through `bin/root_cmp -h`
 
-Example:
+Following are examples of using `root_cmp`, `*.root` files used in 
+examples can be found in `sample_root_files` folder.
 
-`bin/root_cmp -f sample_root_files/f1,sample_root_files/f2`
+1. Two root files are exactlly equal to each other 
 
-`bin/root_cmp -l logic -f sample_root_files/f1,sample_root_files/f2`
+        bin/root_cmp -m CC -l r1_r1.log -f sample_root_files/r1.root,sample_root_files/r1.root
 
+2. Two root files are stricly equal to each other
 
+        bin/root_cmp -m UC -l fx1_fx2.log -f sample_root_files/fx1.root,sample_root_files/fx2.root
+
+3. Two root files are logically equal to each other
+
+        bin/root_cmp -m CC -l r1_r2.log -f sample_root_files/r1.root,sample_root_files/r2.root

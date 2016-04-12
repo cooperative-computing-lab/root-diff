@@ -31,7 +31,8 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
     }
     log_f.open(log_fn);
 
-    clock_t begin = clock();
+    Timer tmr;
+    double t = tmr.elapsed();
 
     while(true) {
         k_1 = (TKey *)n_1();
@@ -87,9 +88,10 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
 
     delete roc;
 
-    clock_t end = clock();
-    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    log_f << "Comparison took: " <<  elapsed_secs << endl;
+    tmr.reset();
+    t = tmr.elapsed();
+    log_f << endl; 
+    log_f << "Comparison took: " << t << endl;
 
     log_f.close();
 

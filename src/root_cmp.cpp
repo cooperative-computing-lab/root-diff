@@ -9,6 +9,7 @@ void usage() {
     cout << "-l         Write details to log (i.e. -l /path/to/logfile)" << endl;
     cout << "-m         Specify compare mode (i.e. CC, UC, RC)." << endl;
     cout << "-f         Specify input files (i.e. -f file1,file2)." << endl;
+    cout << endl;
 }
 
 int main(int argc, char *argv[]) {
