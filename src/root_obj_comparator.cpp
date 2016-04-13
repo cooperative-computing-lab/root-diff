@@ -2,6 +2,10 @@
 
 #define ROOT_DIR "TDirectoryFile"
 
+/*
+ * Uncompress the object buffer exclude the key buffer 
+ */
+
 static char *buffer_uncomprs(TKey *k) 
 {
 
@@ -50,6 +54,11 @@ static char *buffer_uncomprs(TKey *k)
 
     return uncomprs_buf;
 }
+
+/*
+ * If two objects have same object length, number of cycles, class name and 
+ * object name, then they are logically equal to each other.
+ */
 
 bool Rootobj_comparator::logic_cmp(TKey *k_1, TKey *k_2)
 {

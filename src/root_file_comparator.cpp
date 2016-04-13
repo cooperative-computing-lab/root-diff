@@ -71,9 +71,9 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
 
             log_f << k_1->GetName() << " object of " << k_1->GetClassName() << 
                 " class in " << fn_1 << " at " << k_1->GetSeekKey() 
-                << " is NOT EXACTLY EQUAL to " << k_2->GetName() << " object of " 
+                << " and " << k_2->GetName() << " object of " 
                 << k_2->GetClassName() << " class in " << fn_2 << " at " 
-                << k_2->GetSeekKey() << endl;
+                << k_2->GetSeekKey() << " have different timestamp." << endl;
 
             exact_eq = false;
         }
