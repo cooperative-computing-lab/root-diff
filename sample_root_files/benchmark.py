@@ -17,7 +17,7 @@ def create(file, dir, label, shift):
     tree = ROOT.TTree('tree', 'tree of {}'.format(label))
     tree.Branch(label, x, '{}/D'.format(label))
 
-    for i in xrange(1000):
+    for i in xrange(10000000000):
         if args.mode == 'random':
             x[0] = np.random.randn() + shift
             tree.Fill()

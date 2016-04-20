@@ -16,6 +16,16 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
         exit(1);
     } 
 
+    if (access(fn_1, F_OK) == -1) {
+        cout << fn_1 << " does not exist." << endl;
+        exit(1);
+    }
+
+    if (access(fn_2, F_OK) == -1) {
+        cout << fn_2 << " does not exist." << endl;
+        exit(1);
+    }
+
     TFile f_1(fn_1), f_2(fn_2);
 
     TIter n_1(f_1.GetListOfKeys()),

@@ -3,9 +3,11 @@
 
 #include <iostream>
 #include "RZip.h"
+#include "TObject.h"
 #include "TFile.h"
 #include "TKey.h"
 #include "TBuffer.h"
+#include "TBufferFile.h"
 #include "dbg.h"
 #include "TCollection.h"
 

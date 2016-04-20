@@ -82,6 +82,11 @@ bool Rootobj_comparator::logic_cmp(TKey *k_1, TKey *k_2)
     return true;
 }
 
+/*
+ * If two objects are logically and strictly equal to each other, then
+ * they are exactlly equal if they have same timestamp.
+ */
+
 bool Rootobj_comparator::exact_cmp(TKey *k_1, TKey *k_2) 
 {
     return (k_1->GetDatime() == k_2->GetDatime());
@@ -151,6 +156,52 @@ bool Uncmprs_comparator::strict_cmp(TKey *k_1, TKey *k_2)
 
 bool Reprod_comparator::strict_cmp(TKey *k_1, TKey *k_2) 
 {
-    cout << "Reprod_comparator::strict_cmp has not been implemented yet." << endl;
-    return true;
+    TObject *obj_1 = k_1->ReadObj();
+    TObject *obj_2 = k_2->ReadObj();
+
+    // As suggested in TDirectoryFile.cxx, we set the buffer size as 10000
+    const int buf_size = 10000; 
+    TBufferFile buf_f_1(TBuffer::kWrite, buf_size);
+    TBufferFile buf_f_2(TBuffer::kWrite, buf_size);
+  
+    buf_f_1.MapObject(obj_1);
+    buf_f_2.MapObject(obj_2);
+   
+    // Streaming objects to buffers 
+    {
+        bool is_ref_1 = obj_1->TestBit(kIsReferenced);
+        bool is_ref_2 = obj_2->TestBit(kIsReferenced);
+
+        obj_1->ResetBit(kIsReferenced);
+        obj_2->ResetBit(kIsReferenced);
+
+        obj_1->Streamer(buf_f_1);
+        obj_2->Streamer(buf_f_2);
+
+        if(is_ref_1) {
+            obj_1->SetBit(kIsReferenced);
+        }
+        
+        if(is_ref_2) {
+            obj_2->SetBit(kIsReferenced);
+        } 
+
+    }
+
+    buf_f_1.SetReadMode();
+    buf_f_1.SetBufferOffset(0); 
+
+    buf_f_2.SetReadMode();
+    buf_f_2.SetBufferOffset(0); 
+    char *obj_buf_1 = buf_f_1.Buffer() + k_1->GetKeylen();
+    char *obj_buf_2 = buf_f_2.Buffer() + k_2->GetKeylen();
+
+    int obj_len = k_1->GetObjlen();
+
+    if (!memcmp(obj_buf_1, obj_buf_2, obj_len)) {
+        return true;
+    } else {
+        return false;
+    }
+
 }
