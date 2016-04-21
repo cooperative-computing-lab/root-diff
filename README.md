@@ -6,8 +6,6 @@ There are three available mode for comparing
 
 1. **CC** - COMPRESSED COMPARE, which compare the compressed object buffer.
 2. **UC** - UNCOMPRESSED COMPARE, which uncompress the object buffer and compare. 
-3. **RC** - REPRODUCED COMPARE, which reproduce objects, serialize them 
-to byte array and compare.(**NOT IMPLEMENT YET**)
  
 And there are three levels of agreement  
 
