@@ -15,7 +15,7 @@ void usage() {
 int main(int argc, char *argv[]) {
 
     Agree_lv al = Not_eq;
-    bool no_opts = true;
+    bool fn_opts = false;
     int opt = 0;
     string compare_mode = "CC";
     string cmp_mode_str = "COMPRESS COMPARE";
@@ -28,22 +28,19 @@ int main(int argc, char *argv[]) {
 
         switch(opt) {
             case 'l':
-                no_opts = false;
                 log_fn = optarg;
                 break;
 
             case 'm':
-                no_opts = false;
                 compare_mode = optarg;
                 break;
 
             case 'h':
-                no_opts = false;
                 usage();
                 exit(0);
 
             case 'f':
-                no_opts = false;
+                fn_opts = true;
                 tmp_f_name = strtok(optarg, ",");
                 if (!tmp_f_name) {
                     cout << "Please specify two root files." << endl;
@@ -59,14 +56,14 @@ int main(int argc, char *argv[]) {
                 break;
 
             default:
-                no_opts = false;
                 usage();
                 goto error;
 
         }
     }
 
-    if(no_opts) {
+    if(fn_opts == false) {
+        cout << "Please specified two root files." <<endl;
         usage();
         goto error;
     }
@@ -74,6 +71,7 @@ int main(int argc, char *argv[]) {
     if (log_fn.empty()) { 
         log_fn = "root_diff.log";
     }
+
     al = rfc.root_file_cmp(fn1, fn2, compare_mode.c_str(), log_fn.c_str());
 
     switch(al) {
@@ -84,6 +82,8 @@ int main(int argc, char *argv[]) {
             break;
         case Exact_eq:
             agree_lv = "EXACT";
+            break;
+        case Not_eq:
             break;
         default:
             cout << "Unknown Agreement Level" << endl;
