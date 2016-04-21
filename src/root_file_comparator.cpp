@@ -9,8 +9,6 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
         roc = new Cmprs_comparator();
     } else if (!strcmp(mode, "UC")) {
         roc = new Uncmprs_comparator();
-    } else if (!strcmp(mode, "RC")) {
-        roc = new Reprod_comparator();
     } else {
         cout << "unknown option" <<  mode << endl; 
         exit(1);

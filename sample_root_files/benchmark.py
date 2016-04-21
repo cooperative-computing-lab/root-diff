@@ -20,6 +20,7 @@ def create(file, dir, label, shift, scale, mode):
     elif (scale == 'gb'):
         loop_num = 70000000
 
+    print loop_num
     for i in xrange(loop_num):
         if mode == 'random':
             x[0] = np.random.randn() + shift

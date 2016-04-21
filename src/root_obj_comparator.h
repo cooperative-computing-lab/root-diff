@@ -35,10 +35,4 @@ public:
 
 };
 
-class Reprod_comparator : public Rootobj_comparator
-{
-public:
-   bool strict_cmp(TKey *k1, TKey *k2); 
-};
-
 #endif

@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <cstring>
+#include "dbg.h"
 #include "root_file_comparator.h"
 
 void usage() {
@@ -7,7 +8,7 @@ void usage() {
     cout << "Use: root_cmp [options] -- command-line-and-options" << endl;
     cout << endl;
     cout << "-l         Write details to log (i.e. -l /path/to/logfile)" << endl;
-    cout << "-m         Specify compare mode (i.e. CC, UC, RC)." << endl;
+    cout << "-m         Specify compare mode (i.e. CC, UC)." << endl;
     cout << "-f         Specify input files (i.e. -f file1,file2)." << endl;
     cout << endl;
 }
