@@ -6,37 +6,38 @@
  * Uncompress the object buffer exclude the key buffer 
  */
 
-static char *buffer_uncomprs(TKey *k) 
+static unsigned char *buffer_uncomprs(TKey *k) 
 {
 
     //debug("unzip the buffer");
 
     int obj_len = k->GetObjlen(),
         key_len = k->GetKeylen(),
-        offset = k->GetSeekKey() + key_len,
         nsize = k->GetNbytes(),
         comprs_len = nsize - key_len; 
  
+    long offset = k->GetSeekKey() + key_len;
+
     TFile *f = k->GetFile(); 
 
-    char *uncomprs_buf;
+    unsigned char *uncomprs_buf;
 
     char *buf = new char[comprs_len]; 
+
     f->Seek(offset);
     f->ReadBuffer(buf, comprs_len); 
-
 
     if (obj_len > comprs_len) {
 
         // Object is compressed
-        uncomprs_buf = new char[obj_len];
+        uncomprs_buf = new unsigned char[obj_len];
         int nin, nout = 0, noutot = 0, nbuf;
 
         while (1) {
             // Get information of compressed buffer
-            R__unzip_header(&nin, (unsigned char *)buf, &nbuf);
+            R__unzip_header(&nin, (unsigned char*)buf, &nbuf);
             // Uncompress the buffer 
-            R__unzip(&nin, (unsigned char *)buf, &nbuf, (unsigned char *)uncomprs_buf, &nout);
+            R__unzip(&nin, (unsigned char*)buf, &nbuf, uncomprs_buf, &nout);
             if (!nout) { break; }
             noutot += nout;
             if (noutot >= obj_len) { break; }
@@ -46,7 +47,7 @@ static char *buffer_uncomprs(TKey *k)
 
     } else {
         // Object is not compressed
-        uncomprs_buf = new char[comprs_len];
+        uncomprs_buf = new unsigned char[comprs_len];
         memcpy(uncomprs_buf, buf, comprs_len); 
     } 
 
@@ -113,19 +114,24 @@ bool Cmprs_comparator::strict_cmp(TKey *k_1, TKey *k_2)
     int cmprs_len_1 = nsize_1 - k_len_1,
         cmprs_len_2 = nsize_2 - k_len_2;
 
-    int offset_1 = k_1->GetSeekKey() + k_len_1,
-        offset_2 = k_2->GetSeekKey() + k_len_2;
+    long offset_1 = k_1->GetSeekKey() + k_len_1,
+         offset_2 = k_2->GetSeekKey() + k_len_2;
+
+    debug("head1 is: %ld", k_1->GetSeekKey()); 
+    debug("head2 is: %ld", k_2->GetSeekKey()); 
 
     char *buf_1 = new char[cmprs_len_1],
          *buf_2 = new char[cmprs_len_2];
-   
+  
+    debug("offset_1 is: %ld", offset_1); 
     f_1->Seek(offset_1);
     f_1->ReadBuffer(buf_1, cmprs_len_1);
 
+    debug("offset_2 is: %ld", offset_1); 
     f_2->Seek(offset_2);
     f_2->ReadBuffer(buf_2, cmprs_len_2);
    
-    int rc = memcmp(buf_1, buf_2, cmprs_len_1);
+    int rc = memcmp((unsigned char*)buf_1, (unsigned char*)buf_2, cmprs_len_1);
 
     delete [] buf_1;
     delete [] buf_2;
@@ -140,8 +146,8 @@ bool Uncmprs_comparator::strict_cmp(TKey *k_1, TKey *k_2)
     debug("Compare the uncompressed buffer.");
     if (strcmp(k_1->GetClassName(), ROOT_DIR) == 0) { return true; }
 
-    char *uncomprs_buf_1 = buffer_uncomprs(k_1),
-         *uncomprs_buf_2 = buffer_uncomprs(k_2);    
+    unsigned char *uncomprs_buf_1 = buffer_uncomprs(k_1),
+                  *uncomprs_buf_2 = buffer_uncomprs(k_2);    
     
     int obj_len = k_1->GetObjlen();
 
