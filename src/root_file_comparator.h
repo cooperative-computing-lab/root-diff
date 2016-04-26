@@ -13,6 +13,7 @@
 #include <ctime>
 
 #define NAME_LEN 512
+#define HEADER_LEN 100
 
 /*
  * Four agreement levels:
@@ -29,22 +30,6 @@ typedef enum Agree_lv {
     Exact_eq 
 } Agree_lv;
 
-/*
- * Struct storing the object information
- */
-typedef struct Obj_info {
-
-    int key_len, cycle
-        nbytes, date,
-        time, obj_len;
-    
-    long seek_key, seek_pdir;
-
-    char class_name[NAME_LEN],
-         obj_name[NAME_LEN];
-
-} Obj_info;
-
 
 /*
  * The root file comparator class
@@ -56,7 +41,7 @@ public:
     /*
      * Get object information from the header (i.e. TKey)
      */
-    Obj_info *get_obj_info(char *header, long cur, const TFile *f);
+    Obj_info *get_obj_info(const char *header, long cur, const TFile *f);
 
     /*
      * Compare two root files and return the agreement level of the 

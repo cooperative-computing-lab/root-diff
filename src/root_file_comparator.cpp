@@ -1,6 +1,8 @@
 #include "root_file_comparator.h"
 
-Obj_info *get_obj_info(char *header, long cur, const TFile *f) 
+using namespace std;
+
+Obj_info *get_obj_info(const char *header, long cur, const TFile *f) 
 {
     unsigned int datime;
     Obj_info *obj_info = new Obj_info();
@@ -81,15 +83,8 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
         exit(1);
     }
 
-    TFile f_1(fn_1), f_2(fn_2);
-
-    TIter n_1(f_1.GetListOfKeys()),
-          n_2(f_2.GetListOfKeys());
-
-    debug("There are %d objects.", f_1.GetListOfKeys()->Capacity());
-    debug("There are %d objects.", f_2.GetListOfKeys()->Capacity());
-
-    TKey *k_1, *k_2;
+    TFile *f_1 = new TFile(fn_1); 
+    TFile *f_2 = new TFile(fn_2);
 
     bool logic_eq = true, strict_eq = true, exact_eq = true;
   
@@ -103,24 +98,48 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
     Timer tmr;
     double t = tmr.elapsed();
 
-    while(true) {
-        k_1 = (TKey *)n_1();
-        k_2 = (TKey *)n_2(); 
+    int nread_1 = 64,
+        nread_2 = 64;
 
-        if (!k_1 || !k_2){
-            break;
+    long cur_1 = HEADER_LEN, 
+         cur_2 = HEADER_LEN, 
+         f1_end = f_1->GetEND(), 
+         f2_end = f_2->GetEND();
+
+    char header_1[HEADER_LEN],
+         header_2[HEADER_LEN];
+
+    Obj_info *obj_info_1,
+             *obj_info_2;
+
+    while(cur_1 < f1_end && cur_2 < f2_end) {
+        f_1->Seek(cur_1);
+        f_2->Seek(cur_2);
+        
+        if (cur_1 + nread_1 >= f1_end) {
+            nread_1 = f1_end - cur_1 - 1;
+        }
+        if (cur_2 + nread_2 >= f2_end) {
+            nread_2 = f2_end - cur_2 - 1;
         }
 
-        debug("The %s length is %ld", k_1->GetClassName(), k_1->GetObjlen());
-        debug("The %s length is %ld", k_2->GetClassName(), k_2->GetObjlen());
+        if (f_1->ReadBuffer(header_1, nread_1)) {
+            log_err("Failed to read the object header from %s from disk at %ld", fn_1, cur_1);
+        } 
+        if (f_2->ReadBuffer(header_2, nread_2)) {
+            log_err("Failed to read the object header from %s from disk at %ld", fn_2, cur_2);
+        }
 
-        if (!roc->logic_cmp(k_1, k_2)) {
+        obj_info_1 = this.get_obj_info(header_1, cur_1, f_1);
+        obj_info_2 = this.get_obj_info(header_2, cur_2, f_2);
 
-            log_f << k_1->GetName() << " object of " << k_1->GetClassName() << 
-                " class in " << fn_1 << " at " << k_1->GetSeekKey() 
-                << " is NOT LOGICALLY EQUAL to " << k_2->GetName() << " object of " 
-                << k_2->GetClassName() << " class in " << fn_2 << " at " 
-                << k_2->GetSeekKey() << endl;
+        if (!roc->logic_cmp(obj_info_1, obj_info_2)) {
+
+            log_f << " Instance of " << obj_info_1->class_name << 
+                " in "<< fn_1 << " at " << cur_1
+                << " is NOT LOGICALLY EQUAL to " << " Instance of " 
+                << obj_info_2->class_name << " class in " << fn_2 << " at " 
+                << cur_2 << endl;
 
             logic_eq = false;
             strict_eq = false;
@@ -128,30 +147,32 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
             break; 
         }
 
-        if (!roc->strict_cmp(k_1, k_2)) {
-            log_f << k_1->GetName() << " object of " << k_1->GetClassName() << 
-                " class in " << fn_1 << " at " << k_1->GetSeekKey() 
-                << " is NOT STRICTLY EQUAL to " << k_2->GetName() << " object of " 
-                << k_2->GetClassName() << " class in " << fn_2 << " at " 
-                << k_2->GetSeekKey() << endl;
+        if (!roc->strict_cmp(obj_info_1, f_1, obj_info_2, f_2)) {
             
+            log_f << " Instance of " << obj_info_1->class_name << 
+                " in "<< fn_1 << " at " << cur_1
+                << " is NOT STRICTLY EQUAL to " << " Instance of " 
+                << obj_info_2->class_name << " class in " << fn_2 << " at " 
+                << cur_2 << endl;
+
             strict_eq = false;    
             exact_eq = false;
         }
 
-        if (!roc->exact_cmp(k_1, k_2)) {
+        if (!roc->exact_cmp(obj_info_1, obj_info_2)) {
 
-            log_f << k_1->GetName() << " object of " << k_1->GetClassName() << 
-                " class in " << fn_1 << " at " << k_1->GetSeekKey() 
-                << " and " << k_2->GetName() << " object of " 
-                << k_2->GetClassName() << " class in " << fn_2 << " at " 
-                << k_2->GetSeekKey() << " have different timestamp." << endl;
+            log_f << " Instance of " << obj_info_1->class_name << 
+                " in "<< fn_1 << " at " << cur_1
+                << " is NOT EXACTLY EQUAL to " << " Instance of " 
+                << obj_info_2->class_name << " class in " << fn_2 << " at " 
+                << cur_2 << endl;
 
             exact_eq = false;
         }
     } 
 
-    if ((!k_1 && k_2) || (k_1 && !k_2)) {
+    if ((cur_1 >= f1_end && cur_2 < f2_end) || 
+            (cur_1 < f1_end && cur_2 >= f2_end)) {
         log_f << "Number of objects in " << fn_1 << " and " << fn_2 << " are not equal."<< endl;
         log_f.close();
         delete roc; 
@@ -176,5 +197,8 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
     } else {
         return Logic_eq;
     }
+
+error:
+    exit(1);
 
 }

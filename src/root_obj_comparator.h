@@ -11,27 +11,42 @@
 #include "dbg.h"
 #include "TCollection.h"
 
-using namespace std;
+/*
+ * Struct storing the object information
+ */
+typedef struct Obj_info {
+
+    int key_len, cycle
+        nbytes, date,
+        time, obj_len;
+    
+    long seek_key, seek_pdir;
+
+    char class_name[NAME_LEN],
+         obj_name[NAME_LEN];
+
+} Obj_info;
+
 
 // Base class
 class Rootobj_comparator
 {
 public:
-    bool logic_cmp(TKey *k1, TKey *k2);
-    bool exact_cmp(TKey *k1, TKey *k2);
-    virtual bool strict_cmp(TKey *k1, TKey *k2) = 0;
+    bool logic_cmp(Obj_info *obj_info_1, Obj_info *obj_info_1);
+    bool exact_cmp(Obj_info *obj_info_1, Obj_info *obj_info_1);
+    virtual bool strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj_info_1, TFile *f2) = 0;
 };
 
 class Cmprs_comparator : public Rootobj_comparator
 {
 public:
-   bool strict_cmp(TKey *k1, TKey *k2); 
+   bool strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj_info_1, TFile *f2); 
 };
 
 class Uncmprs_comparator : public Rootobj_comparator
 {
 public:
-   bool strict_cmp(TKey *k1, TKey *k2); 
+   bool strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj_info_1, TFile *f2); 
 
 };
 

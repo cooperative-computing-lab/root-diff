@@ -2,11 +2,15 @@
 
 #define ROOT_DIR "TDirectoryFile"
 
+using namespace std;
+
+//TODO adjust function for new input variable
+
 /*
  * Uncompress the object buffer exclude the key buffer 
  */
 
-static unsigned char *buffer_uncomprs(TKey *k) 
+static unsigned char *buffer_uncomprs(Obj_info *obj_info, TFile *f) 
 {
 
     //debug("unzip the buffer");
@@ -61,7 +65,7 @@ static unsigned char *buffer_uncomprs(TKey *k)
  * object name, then they are logically equal to each other.
  */
 
-bool Rootobj_comparator::logic_cmp(TKey *k_1, TKey *k_2)
+bool Rootobj_comparator::logic_cmp(Obj_info *obj_info_1, Obj_info *obj_info_1)
 {
 
     if (k_1->GetObjlen() != k_2->GetObjlen()) {
@@ -88,12 +92,12 @@ bool Rootobj_comparator::logic_cmp(TKey *k_1, TKey *k_2)
  * they are exactlly equal if they have same timestamp.
  */
 
-bool Rootobj_comparator::exact_cmp(TKey *k_1, TKey *k_2) 
+bool Rootobj_comparator::exact_cmp(Obj_info *obj_info_1, Obj_info *obj_info_2) 
 {
     return (k_1->GetDatime() == k_2->GetDatime());
 }
 
-bool Cmprs_comparator::strict_cmp(TKey *k_1, TKey *k_2) 
+bool Cmprs_comparator::strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj_info_1, TFile *f2) 
 {
     
     debug("Compare the compressed buffer");   
@@ -140,14 +144,14 @@ bool Cmprs_comparator::strict_cmp(TKey *k_1, TKey *k_2)
 }
 
 
-bool Uncmprs_comparator::strict_cmp(TKey *k_1, TKey *k_2)
+bool Uncmprs_comparator::strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj_info_1, TFile *f2)
 {
     
     debug("Compare the uncompressed buffer.");
     if (strcmp(k_1->GetClassName(), ROOT_DIR) == 0) { return true; }
 
-    unsigned char *uncomprs_buf_1 = buffer_uncomprs(k_1),
-                  *uncomprs_buf_2 = buffer_uncomprs(k_2);    
+    unsigned char *uncomprs_buf_1 = buffer_uncomprs(obj_info_1, f1),
+                  *uncomprs_buf_2 = buffer_uncomprs(obj_info_2, f2);    
     
     int obj_len = k_1->GetObjlen();
 
