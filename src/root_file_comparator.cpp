@@ -2,7 +2,10 @@
 
 using namespace std;
 
-Obj_info *get_obj_info(const char *header, long cur, const TFile *f) 
+/*
+ * Get object information from the header (i.e. TKey)
+ */
+static Obj_info *get_obj_info(const char *header, long cur, const TFile *f) 
 {
     unsigned int datime;
     Obj_info *obj_info = new Obj_info();
@@ -56,7 +59,8 @@ error:
     if(obj_info) {
         delete obj_info;
     }
-    return NULL;
+
+    exit(1);
 }
 
 Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2, 
@@ -147,6 +151,12 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
             break; 
         }
 
+        if(obj_info_1->nbytes < 0) {
+            cur_1 -= obj_info_1->nbytes;
+            cur_2 -= obj_info_2->nbytes; 
+            break;
+        }
+
         if (!roc->strict_cmp(obj_info_1, f_1, obj_info_2, f_2)) {
             
             log_f << " Instance of " << obj_info_1->class_name << 
@@ -169,17 +179,32 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
 
             exact_eq = false;
         }
+
+        cur_1 += obj_info_1->nbytes;
+        cur_2 += obj_info_2->nbytes;
+
+        delete obj_info_1;
+        delete obj_info_2;
     } 
+
+    if(!roc) {
+        delete roc;
+    }
+
+    if(!obj_info_1) {
+        delete obj_info_1;
+    }
+
+    if(!obj_info_2) {
+        delete obj_info_1;
+    }
 
     if ((cur_1 >= f1_end && cur_2 < f2_end) || 
             (cur_1 < f1_end && cur_2 >= f2_end)) {
         log_f << "Number of objects in " << fn_1 << " and " << fn_2 << " are not equal."<< endl;
         log_f.close();
-        delete roc; 
         return Not_eq;
     }
-
-    delete roc;
 
     tmr.reset();
     t = tmr.elapsed();
@@ -188,14 +213,14 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
 
     log_f.close();
 
-    if (!logic_eq && !strict_eq && !exact_eq){
-        return Not_eq;
-    } else if (exact_eq){
+    if(exact_eq){
         return Exact_eq;
     } else if (strict_eq){
         return Strict_eq;
-    } else {
+    } else if (logic_eq){
         return Logic_eq;
+    } else {
+        return Not_eq;
     }
 
 error:

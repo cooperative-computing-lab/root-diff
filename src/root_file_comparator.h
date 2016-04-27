@@ -39,11 +39,6 @@ class Rootfile_comparator
 public:
 
     /*
-     * Get object information from the header (i.e. TKey)
-     */
-    Obj_info *get_obj_info(const char *header, long cur, const TFile *f);
-
-    /*
      * Compare two root files and return the agreement level of the 
      * comparsion
      */

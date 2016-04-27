@@ -15,14 +15,12 @@ static unsigned char *buffer_uncomprs(Obj_info *obj_info, TFile *f)
 
     //debug("unzip the buffer");
 
-    int obj_len = k->GetObjlen(),
-        key_len = k->GetKeylen(),
-        nsize = k->GetNbytes(),
+    int obj_len = obj_info->obj_len,
+        key_len = obj_info->key_len,
+        nsize = obj_info->nbytes,
         comprs_len = nsize - key_len; 
  
-    long offset = k->GetSeekKey() + key_len;
-
-    TFile *f = k->GetFile(); 
+    long offset = obj_info->seek_key + key_len;
 
     unsigned char *uncomprs_buf;
 
@@ -68,19 +66,15 @@ static unsigned char *buffer_uncomprs(Obj_info *obj_info, TFile *f)
 bool Rootobj_comparator::logic_cmp(Obj_info *obj_info_1, Obj_info *obj_info_1)
 {
 
-    if (k_1->GetObjlen() != k_2->GetObjlen()) {
+    if ((obj_info_1->obj_len) != (obj_info_2->obj_len)) {
         return false;
     }
     
-    if (k_1->GetCycle() != k_2->GetCycle()) {
+    if (obj_info_1->cycle != obj_info_2->cycle) {
         return false;
     }
     
-    if (strcmp(k_1->GetName(), k_2->GetName()) != 0) {
-        return false;
-    }
-
-    if (strcmp(k_1->GetClassName(), k_2->GetClassName()) != 0) {
+    if (strcmp(obj_info_1->class_name, obj_info_2->class_name) != 0) {
         return false;
     }
     
@@ -94,35 +88,39 @@ bool Rootobj_comparator::logic_cmp(Obj_info *obj_info_1, Obj_info *obj_info_1)
 
 bool Rootobj_comparator::exact_cmp(Obj_info *obj_info_1, Obj_info *obj_info_2) 
 {
-    return (k_1->GetDatime() == k_2->GetDatime());
+    if (obj_info_1->date != obj_info_1->date) {
+        return false;
+    }
+
+    if (obj_info_1->time != obj_info_1->time) {
+        return false;
+    }  
+
+    return true;
 }
 
-bool Cmprs_comparator::strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj_info_1, TFile *f2) 
+bool Cmprs_comparator::strict_cmp(Obj_info *obj_info_1, TFile *f_1, Obj_info *obj_info_2, TFile *f_2) 
 {
     
     debug("Compare the compressed buffer");   
+
     // Since TDirectoryFile class has fUUID attribute,
     // we could not compare two TDirectoryFile objects  
     
-    if (!strcmp(k_1->GetClassName(), ROOT_DIR)) { return true; } 
+    if (!strcmp(obj_info_1->class_name, ROOT_DIR)) { return true; } 
+    if (!strcmp(obj_info_2->class_name, ROOT_DIR)) { return true; } 
 
-    TFile *f_1 = k_1->GetFile(),
-          *f_2 = k_2->GetFile();
+    int nsize_1 = obj_info_1->nbytes,
+        nsize_2 = obj_info_2->nbytes;
 
-    int nsize_1 = k_1->GetNbytes(),
-        nsize_2 = k_2->GetNbytes();
-
-    int k_len_1 = k_1->GetKeylen(),
-        k_len_2 = k_2->GetKeylen();
+    int k_len_1 = obj_info_1->key_len,
+        k_len_2 = obj_info_2->key_len;
 
     int cmprs_len_1 = nsize_1 - k_len_1,
         cmprs_len_2 = nsize_2 - k_len_2;
 
-    long offset_1 = k_1->GetSeekKey() + k_len_1,
-         offset_2 = k_2->GetSeekKey() + k_len_2;
-
-    debug("head1 is: %ld", k_1->GetSeekKey()); 
-    debug("head2 is: %ld", k_2->GetSeekKey()); 
+    long offset_1 = obj_info_1->seek_key + k_len_1,
+         offset_2 = obj_info_2->seek_key + k_len_2;
 
     char *buf_1 = new char[cmprs_len_1],
          *buf_2 = new char[cmprs_len_2];
@@ -144,16 +142,17 @@ bool Cmprs_comparator::strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj
 }
 
 
-bool Uncmprs_comparator::strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj_info_1, TFile *f2)
+bool Uncmprs_comparator::strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj_info_2, TFile *f2)
 {
     
     debug("Compare the uncompressed buffer.");
-    if (strcmp(k_1->GetClassName(), ROOT_DIR) == 0) { return true; }
+    if (strcmp(obj_info_1->class_name, ROOT_DIR) == 0) { return true; }
+    if (strcmp(obj_info_2->class_name, ROOT_DIR) == 0) { return true; }
 
     unsigned char *uncomprs_buf_1 = buffer_uncomprs(obj_info_1, f1),
                   *uncomprs_buf_2 = buffer_uncomprs(obj_info_2, f2);    
     
-    int obj_len = k_1->GetObjlen();
+    int obj_len = obj_info_1->obj_len;
 
     int rc = memcmp(uncomprs_buf_1, uncomprs_buf_2, obj_len);
 
