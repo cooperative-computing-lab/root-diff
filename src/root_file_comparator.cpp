@@ -5,40 +5,41 @@ using namespace std;
 /*
  * Get object information from the header (i.e. TKey)
  */
-static Obj_info *get_obj_info(const char *header, long cur, const TFile *f) 
+static Obj_info *get_obj_info(char *header_array, long cur, const TFile *f) 
 {
     unsigned int datime;
     Obj_info *obj_info = new Obj_info();
-    check_mem(obj_info, "cannot allocate memory space for Obj_info class");
+    char *header;
 
+    header = header_array;
     frombuf(header, &(obj_info->nbytes));
     if (!obj_info->nbytes) {
         log_err("The size of the object buffer is unaccessible.");
     } 
 
     Version_t version_key;
-    frombuf(header, &(obj_info->version_key));
+    frombuf(header, &version_key);
     frombuf(header, &(obj_info->obj_len));   
-    frombuf(header, &(obj_info->datime)); 
+    frombuf(header, &datime); 
     frombuf(header, &(obj_info->key_len));   
     frombuf(header, &(obj_info->cycle));   
 
     if (version_key > 1000) {
         //for large file the type of seek_key and seek_pdir is long
-        frombuf(header, &seek_key);
-        frombuf(header, &seek_pdir);
+        frombuf(header, &(obj_info->seek_key));
+        frombuf(header, &(obj_info->seek_pdir));
     } else {
         int s_key, s_dir;
         frombuf(header, &s_key);
-        obj->seek_key = (long)s_key; 
-        obj->seek_pdir = (long)s_dir;
+        obj_info->seek_key = (long)s_key; 
+        obj_info->seek_pdir = (long)s_dir;
     }
 
     // Get the class name of object
     char class_name_len;
     frombuf(header, &class_name_len);
     for (int i=0; i<class_name_len; i++) {
-        frombuf(header, &(obj_info->class_name[i]);
+        frombuf(header, &(obj_info->class_name[i]));
     }
     obj_info->class_name[(int)(class_name_len)] = '\0';
 
@@ -134,8 +135,8 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
             log_err("Failed to read the object header from %s from disk at %ld", fn_2, cur_2);
         }
 
-        obj_info_1 = this.get_obj_info(header_1, cur_1, f_1);
-        obj_info_2 = this.get_obj_info(header_2, cur_2, f_2);
+        obj_info_1 = get_obj_info(header_1, cur_1, f_1);
+        obj_info_2 = get_obj_info(header_2, cur_2, f_2);
 
         if (!roc->logic_cmp(obj_info_1, obj_info_2)) {
 

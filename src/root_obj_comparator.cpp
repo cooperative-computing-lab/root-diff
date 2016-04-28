@@ -7,7 +7,8 @@ using namespace std;
 //TODO adjust function for new input variable
 
 /*
- * Uncompress the object buffer exclude the key buffer 
+
+header = header_array; * Uncompress the object buffer exclude the key buffer 
  */
 
 static unsigned char *buffer_uncomprs(Obj_info *obj_info, TFile *f) 
@@ -63,7 +64,7 @@ static unsigned char *buffer_uncomprs(Obj_info *obj_info, TFile *f)
  * object name, then they are logically equal to each other.
  */
 
-bool Rootobj_comparator::logic_cmp(Obj_info *obj_info_1, Obj_info *obj_info_1)
+bool Rootobj_comparator::logic_cmp(Obj_info *obj_info_1, Obj_info *obj_info_2)
 {
 
     if ((obj_info_1->obj_len) != (obj_info_2->obj_len)) {
@@ -88,11 +89,11 @@ bool Rootobj_comparator::logic_cmp(Obj_info *obj_info_1, Obj_info *obj_info_1)
 
 bool Rootobj_comparator::exact_cmp(Obj_info *obj_info_1, Obj_info *obj_info_2) 
 {
-    if (obj_info_1->date != obj_info_1->date) {
+    if (obj_info_1->date != obj_info_2->date) {
         return false;
     }
 
-    if (obj_info_1->time != obj_info_1->time) {
+    if (obj_info_1->time != obj_info_2->time) {
         return false;
     }  
 

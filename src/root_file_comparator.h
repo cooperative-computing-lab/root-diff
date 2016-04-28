@@ -1,18 +1,16 @@
 #ifndef __ROOT_F_CMPTR__
 #define __ROOT_F_CMPTR__
 
+#include <cstring>
+#include <fstream>
+#include <ctime>
 #include "root_obj_comparator.h"
 #include "TDatime.h"
 #include "RtypesCore.h"
 #include "Bytes.h"
-#include "dbg.h"
 #include "timer.h"
 #include "unistd.h"
-#include <cstring>
-#include <fstream>
-#include <ctime>
 
-#define NAME_LEN 512
 #define HEADER_LEN 100
 
 /*

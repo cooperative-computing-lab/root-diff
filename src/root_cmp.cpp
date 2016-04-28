@@ -3,6 +3,8 @@
 #include "dbg.h"
 #include "root_file_comparator.h"
 
+using namespace std;
+
 void usage() {
     cout << endl;
     cout << "Use: root_cmp [options] -- command-line-and-options" << endl;
