@@ -4,7 +4,9 @@
 
 using namespace std;
 
-//TODO adjust function for new input variable
+Rootobj_comparator::Rootobj_comparator(bool debug_opt) {
+    this->debug_mode = debug_opt;
+}
 
 /*
 
@@ -79,9 +81,6 @@ bool Rootobj_comparator::logic_cmp(Obj_info *obj_info_1, Obj_info *obj_info_2)
         return false;
     }
   
-    cout << "obj_1 nbytes: " << obj_info_1->nbytes << endl;
-    cout << "obj_2 nbytes: " << obj_info_2->nbytes << endl;
-
     return true;
 }
 
@@ -105,8 +104,10 @@ bool Rootobj_comparator::exact_cmp(Obj_info *obj_info_1, Obj_info *obj_info_2)
 
 bool Cmprs_comparator::strict_cmp(Obj_info *obj_info_1, TFile *f_1, Obj_info *obj_info_2, TFile *f_2) 
 {
-    
-    debug("Compare the compressed buffer");   
+
+    if(this->debug_mode) {
+        debug("Compare the compressed buffer of %s object in file 1 and %s object in file 2", obj_info_1->class_name, obj_info_2->class_name);   
+    }
 
     // Since TDirectoryFile class has fUUID attribute,
     // we could not compare two TDirectoryFile objects  
@@ -147,7 +148,10 @@ bool Cmprs_comparator::strict_cmp(Obj_info *obj_info_1, TFile *f_1, Obj_info *ob
 bool Uncmprs_comparator::strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj_info_2, TFile *f2)
 {
     
-    debug("Compare the uncompressed buffer.");
+    if(this->debug_mode) {
+        debug("Compare the uncompressed buffer of %s object in file 1 and %s object file 2", obj_info_1->class_name, obj_info_2->class_name);   
+    }
+
     if (strcmp(obj_info_1->class_name, ROOT_DIR) == 0) { return true; }
     if (strcmp(obj_info_2->class_name, ROOT_DIR) == 0) { return true; }
 

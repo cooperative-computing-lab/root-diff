@@ -25,14 +25,15 @@ static void usage()
     cout << "-l         Write details to log (i.e. -l /path/to/logfile)" << endl;
     cout << "-m         Specify compare mode (i.e. CC, UC)." << endl;
     cout << "-f         Specify input files (i.e. -f file1,file2)." << endl;
+    cout << "-d         Enable debug mode." << endl;
     cout << endl;
 }
 
 int main(int argc, char *argv[]) 
 {
-
     Agree_lv al = Not_eq;
     bool fn_opts = false;
+    bool debug_opts = false;
     int opt = 0;
     string compare_mode = "CC";
     string cmp_mode_str = "COMPRESS COMPARE";
@@ -45,10 +46,9 @@ int main(int argc, char *argv[])
     ignored_classes.insert("TFile");
     ignored_classes.insert("TDirectory");
     ignored_classes.insert("KeysList");
+    Rootfile_comparator rfc = Rootfile_comparator(debug_opts);
 
-    Rootfile_comparator rfc = Rootfile_comparator();
-
-    while((opt = getopt(argc, argv, "hf:m:l:c:")) != -1) {
+    while((opt = getopt(argc, argv, "hf:m:l:c:d")) != -1) {
 
         switch(opt) {
 
@@ -85,12 +85,18 @@ int main(int argc, char *argv[])
                 get_ignored_classes(ignored_classes, ignored_classes_fn);     
                 break;
 
+            case 'd':
+                debug_opts = true;
+                break;
+
             default:
                 usage();
                 goto error;
 
         }
     }
+
+    rfc = Rootfile_comparator(debug_opts);
 
     if(fn_opts == false) {
         cout << "Please specified two root files." <<endl;

@@ -35,6 +35,8 @@ typedef struct Obj_info {
 class Rootobj_comparator
 {
 public:
+    bool debug_mode = false;
+    Rootobj_comparator(bool debug_opt);
     bool logic_cmp(Obj_info *obj_info_1, Obj_info *obj_info_2);
     bool exact_cmp(Obj_info *obj_info_1, Obj_info *obj_info_2);
     virtual bool strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj_info_2, TFile *f2) = 0;
@@ -43,12 +45,14 @@ public:
 class Cmprs_comparator : public Rootobj_comparator
 {
 public:
+   using Rootobj_comparator::Rootobj_comparator;
    bool strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj_info_2, TFile *f2); 
 };
 
 class Uncmprs_comparator : public Rootobj_comparator
 {
 public:
+   using Rootobj_comparator::Rootobj_comparator;
    bool strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj_info_2, TFile *f2); 
 
 };

@@ -2,11 +2,16 @@
 
 using namespace std;
 
+Rootfile_comparator::Rootfile_comparator(bool debug_opt)
+{
+    this->debug_mode = debug_opt;
+}
+
 /*
  * Get object information from the header (i.e. TKey)
  */
 
-static Obj_info *get_obj_info(char *header_array, Long64_t cur, const TFile *f) 
+static Obj_info *get_obj_info(char *header_array, Long64_t cur, const TFile *f, bool debug_mode) 
 {
     UInt_t datime;
     Obj_info *obj_info = new Obj_info();
@@ -25,6 +30,17 @@ static Obj_info *get_obj_info(char *header_array, Long64_t cur, const TFile *f)
     frombuf(header, &datime); 
     frombuf(header, &(obj_info->key_len));   
     frombuf(header, &(obj_info->cycle));   
+
+    if (debug_mode) {
+        debug("============%s obj info=============", obj_info->class_name);
+        debug("version: %d", version_key);
+        debug("object len: %d", obj_info->obj_len);
+        debug("datime: %d", datime);
+        debug("key len: %d", obj_info->key_len);
+        debug("# of cycles: %d", obj_info->cycle); 
+        debug("====================================");
+    }
+
 
     if (version_key > 1000) {
         //for large file the type of seek_key and seek_pdir is long
@@ -70,14 +86,15 @@ error:
 }
 
 Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2, 
-        const char *mode, const char *log_fn, set<string> ignored_classes) 
+        const char *mode, const char *log_fn, 
+        set<string> ignored_classes) 
 {
     Rootobj_comparator *roc;   
 
     if (!strcmp(mode, "CC")) {
-        roc = new Cmprs_comparator();
+        roc = new Cmprs_comparator(this->debug_mode);
     } else if (!strcmp(mode, "UC")) {
-        roc = new Uncmprs_comparator();
+        roc = new Uncmprs_comparator(this->debug_mode);
     } else {
         cout << "unknown option" <<  mode << endl; 
         exit(1);
@@ -145,8 +162,14 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
             log_err("Failed to read the object header from %s from disk at %ld", fn_2, cur_2);
         }
 
-        obj_info_1 = get_obj_info(header_1, cur_1, f_1);
-        obj_info_2 = get_obj_info(header_2, cur_2, f_2);
+        obj_info_1 = get_obj_info(header_1, cur_1, f_1, this->debug_mode);
+        obj_info_2 = get_obj_info(header_2, cur_2, f_2, this->debug_mode);
+
+        if(obj_info_1->nbytes < 0) {
+            cur_1 -= obj_info_1->nbytes;
+            cur_2 -= obj_info_2->nbytes;
+            continue;
+        }
 
         if (!roc->logic_cmp(obj_info_1, obj_info_2)) {
 
@@ -162,13 +185,16 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
             break; 
         }
 
-        if(obj_info_1->nbytes < 0) {
-            cur_1 -= obj_info_1->nbytes;
-            cur_2 -= obj_info_2->nbytes;
-            continue;
-        }
-       
         class_name_str_1 = string(obj_info_1->class_name);
+       
+        if(this->debug_mode) {        
+            set<string>::iterator it;
+            cout << "Ignored classes are: ";
+            for (it = ignored_classes.begin(); it != ignored_classes.end(); ++it) {
+                cout << *it << " ";
+            }
+            cout << endl;
+        }
 
         if (ignored_classes.find(class_name_str_1) == ignored_classes.end()) {
             

@@ -35,14 +35,17 @@ typedef enum Agree_lv {
  */
 class Rootfile_comparator
 {
+    bool debug_mode = false;
+    
 public:
-
+    Rootfile_comparator(bool debug_opt);
     /*
      * Compare two root files and return the agreement level of the 
      * comparsion
      */
     Agree_lv root_file_cmp(char *f_1, char *f_2, 
-            const char *mode, const char *log_fn, std::set<std::string> ignored_classes);
+            const char *mode, const char *log_fn, 
+            std::set<std::string> ignored_classes);
 };
 
 #endif
