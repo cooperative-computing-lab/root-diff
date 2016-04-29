@@ -1,21 +1,35 @@
 #include <unistd.h>
 #include <cstring>
 #include "dbg.h"
+#include <string>
+#include <fstream>
 #include "root_file_comparator.h"
 
 using namespace std;
 
-void usage() {
+static void get_ignored_classes(set<string> &ignored_classes, char *ignored_classes_fn) 
+{
+    ifstream classes_fn(ignored_classes_fn);        
+    string curr_line;
+    while(getline(classes_fn, curr_line)) {
+        ignored_classes.insert(curr_line);    
+    }
+}
+
+static void usage() 
+{
     cout << endl;
     cout << "Use: root_cmp [options] -- command-line-and-options" << endl;
     cout << endl;
+    cout << "-c         Path to the user specified file, which records ignored classes" << endl; 
     cout << "-l         Write details to log (i.e. -l /path/to/logfile)" << endl;
     cout << "-m         Specify compare mode (i.e. CC, UC)." << endl;
     cout << "-f         Specify input files (i.e. -f file1,file2)." << endl;
     cout << endl;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) 
+{
 
     Agree_lv al = Not_eq;
     bool fn_opts = false;
@@ -25,11 +39,19 @@ int main(int argc, char *argv[]) {
     string agree_lv = "LOGICAL";
     string log_fn = string();
     char *tmp_f_name = NULL, *fn1 = NULL, *fn2 = NULL;
+    char *ignored_classes_fn = NULL;
+
+    set<string> ignored_classes; 
+    ignored_classes.insert("TFile");
+    ignored_classes.insert("TDirectory");
+    ignored_classes.insert("KeysList");
+
     Rootfile_comparator rfc = Rootfile_comparator();
 
-    while((opt = getopt(argc, argv, "hf:m:l:")) != -1) {
+    while((opt = getopt(argc, argv, "hf:m:l:c:")) != -1) {
 
         switch(opt) {
+
             case 'l':
                 log_fn = optarg;
                 break;
@@ -58,6 +80,11 @@ int main(int argc, char *argv[]) {
                 fn2 = strdup(tmp_f_name);
                 break;
 
+            case 'c':
+                ignored_classes_fn = optarg; 
+                get_ignored_classes(ignored_classes, ignored_classes_fn);     
+                break;
+
             default:
                 usage();
                 goto error;
@@ -75,7 +102,7 @@ int main(int argc, char *argv[]) {
         log_fn = "root_diff.log";
     }
 
-    al = rfc.root_file_cmp(fn1, fn2, compare_mode.c_str(), log_fn.c_str());
+    al = rfc.root_file_cmp(fn1, fn2, compare_mode.c_str(), log_fn.c_str(), ignored_classes);
 
     switch(al) {
         case Logic_eq:

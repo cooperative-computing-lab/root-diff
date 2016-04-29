@@ -4,6 +4,7 @@
 #include <cstring>
 #include <fstream>
 #include <ctime>
+#include <set>
 #include "root_obj_comparator.h"
 #include "TDatime.h"
 #include "RtypesCore.h"
@@ -41,7 +42,7 @@ public:
      * comparsion
      */
     Agree_lv root_file_cmp(char *f_1, char *f_2, 
-            const char *mode, const char *log_fn);
+            const char *mode, const char *log_fn, std::set<std::string> ignored_classes);
 };
 
 #endif

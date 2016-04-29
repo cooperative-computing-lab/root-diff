@@ -18,14 +18,15 @@
  */
 typedef struct Obj_info {
 
-    int key_len, cycle, 
-        nbytes, date,
-        time, obj_len;
-    
-    long seek_key, seek_pdir;
+    Short_t key_len,
+            cycle;
 
-    char class_name[NAME_LEN],
-         obj_name[NAME_LEN];
+    Int_t nbytes, date,
+          time, obj_len;
+    
+    Long64_t seek_key, seek_pdir;
+
+    char class_name[NAME_LEN];
 
 } Obj_info;
 

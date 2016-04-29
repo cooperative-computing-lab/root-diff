@@ -14,7 +14,7 @@ header = header_array; * Uncompress the object buffer exclude the key buffer
 static unsigned char *buffer_uncomprs(Obj_info *obj_info, TFile *f) 
 {
 
-    //debug("unzip the buffer");
+    debug("unzip the buffer");
 
     int obj_len = obj_info->obj_len,
         key_len = obj_info->key_len,
@@ -70,7 +70,7 @@ bool Rootobj_comparator::logic_cmp(Obj_info *obj_info_1, Obj_info *obj_info_2)
     if ((obj_info_1->obj_len) != (obj_info_2->obj_len)) {
         return false;
     }
-    
+
     if (obj_info_1->cycle != obj_info_2->cycle) {
         return false;
     }
@@ -78,7 +78,10 @@ bool Rootobj_comparator::logic_cmp(Obj_info *obj_info_1, Obj_info *obj_info_2)
     if (strcmp(obj_info_1->class_name, obj_info_2->class_name) != 0) {
         return false;
     }
-    
+  
+    cout << "obj_1 nbytes: " << obj_info_1->nbytes << endl;
+    cout << "obj_2 nbytes: " << obj_info_2->nbytes << endl;
+
     return true;
 }
 
@@ -126,11 +129,9 @@ bool Cmprs_comparator::strict_cmp(Obj_info *obj_info_1, TFile *f_1, Obj_info *ob
     char *buf_1 = new char[cmprs_len_1],
          *buf_2 = new char[cmprs_len_2];
   
-    debug("offset_1 is: %ld", offset_1); 
     f_1->Seek(offset_1);
     f_1->ReadBuffer(buf_1, cmprs_len_1);
 
-    debug("offset_2 is: %ld", offset_1); 
     f_2->Seek(offset_2);
     f_2->ReadBuffer(buf_2, cmprs_len_2);
    
