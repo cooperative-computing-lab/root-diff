@@ -13,7 +13,6 @@ class Timer
 public:
     Timer(); 
     double elapsed();
-
     void reset();
 
 private:

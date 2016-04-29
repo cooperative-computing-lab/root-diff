@@ -7,7 +7,7 @@ Timer::Timer() {
 double Timer::elapsed() {
     clock_gettime(CLOCK_REALTIME, &end);
     return end.tv_sec - begin.tv_sec +
-    (end.tv_nsec - begin.tv_nsec) / 1000000000.;
+    (end.tv_nsec - begin.tv_nsec) / 1000.;
 }
 
 void Timer::reset() {
