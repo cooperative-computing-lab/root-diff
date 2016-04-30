@@ -1,12 +1,9 @@
 #include "root_obj_comparator.h"
+#include "dbg.h"
 
 #define ROOT_DIR "TDirectoryFile"
 
 using namespace std;
-
-Rootobj_comparator::Rootobj_comparator(bool debug_opt) {
-    this->debug_mode = debug_opt;
-}
 
 /*
 
@@ -15,8 +12,9 @@ header = header_array; * Uncompress the object buffer exclude the key buffer
 
 static unsigned char *buffer_uncomprs(Obj_info *obj_info, TFile *f) 
 {
-
-    debug("unzip the buffer");
+    if (debug_mode) {
+        debug("unzip the buffer");
+    }
 
     int obj_len = obj_info->obj_len,
         key_len = obj_info->key_len,
@@ -105,7 +103,7 @@ bool Rootobj_comparator::exact_cmp(Obj_info *obj_info_1, Obj_info *obj_info_2)
 bool Cmprs_comparator::strict_cmp(Obj_info *obj_info_1, TFile *f_1, Obj_info *obj_info_2, TFile *f_2) 
 {
 
-    if(this->debug_mode) {
+    if(debug_mode) {
         debug("Compare the compressed buffer of %s object in file 1 and %s object in file 2", obj_info_1->class_name, obj_info_2->class_name);   
     }
 
@@ -148,7 +146,7 @@ bool Cmprs_comparator::strict_cmp(Obj_info *obj_info_1, TFile *f_1, Obj_info *ob
 bool Uncmprs_comparator::strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj_info_2, TFile *f2)
 {
     
-    if(this->debug_mode) {
+    if(debug_mode) {
         debug("Compare the uncompressed buffer of %s object in file 1 and %s object file 2", obj_info_1->class_name, obj_info_2->class_name);   
     }
 

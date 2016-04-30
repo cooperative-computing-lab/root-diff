@@ -2,16 +2,11 @@
 
 using namespace std;
 
-Rootfile_comparator::Rootfile_comparator(bool debug_opt)
-{
-    this->debug_mode = debug_opt;
-}
-
 /*
  * Get object information from the header (i.e. TKey)
  */
 
-static Obj_info *get_obj_info(char *header_array, Long64_t cur, const TFile *f, bool debug_mode) 
+static Obj_info *get_obj_info(char *header_array, Long64_t cur, const TFile *f) 
 {
     UInt_t datime;
     Obj_info *obj_info = new Obj_info();
@@ -92,9 +87,9 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
     Rootobj_comparator *roc;   
 
     if (!strcmp(mode, "CC")) {
-        roc = new Cmprs_comparator(this->debug_mode);
+        roc = new Cmprs_comparator();
     } else if (!strcmp(mode, "UC")) {
-        roc = new Uncmprs_comparator(this->debug_mode);
+        roc = new Uncmprs_comparator();
     } else {
         cout << "unknown option" <<  mode << endl; 
         exit(1);
@@ -162,8 +157,8 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
             log_err("Failed to read the object header from %s from disk at %ld", fn_2, cur_2);
         }
 
-        obj_info_1 = get_obj_info(header_1, cur_1, f_1, this->debug_mode);
-        obj_info_2 = get_obj_info(header_2, cur_2, f_2, this->debug_mode);
+        obj_info_1 = get_obj_info(header_1, cur_1, f_1);
+        obj_info_2 = get_obj_info(header_2, cur_2, f_2);
 
         if(obj_info_1->nbytes < 0) {
             cur_1 -= obj_info_1->nbytes;
@@ -187,7 +182,7 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
 
         class_name_str_1 = string(obj_info_1->class_name);
        
-        if(this->debug_mode) {        
+        if(debug_mode) {        
             set<string>::iterator it;
             cout << "Ignored classes are: ";
             for (it = ignored_classes.begin(); it != ignored_classes.end(); ++it) {

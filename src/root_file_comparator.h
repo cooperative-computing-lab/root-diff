@@ -5,12 +5,13 @@
 #include <fstream>
 #include <ctime>
 #include <set>
-#include "root_obj_comparator.h"
 #include "TDatime.h"
 #include "RtypesCore.h"
 #include "Bytes.h"
 #include "timer.h"
 #include "unistd.h"
+#include "dbg.h"
+#include "root_obj_comparator.h"
 
 #define HEADER_LEN 100
 
@@ -35,10 +36,7 @@ typedef enum Agree_lv {
  */
 class Rootfile_comparator
 {
-    bool debug_mode = false;
-    
 public:
-    Rootfile_comparator(bool debug_opt);
     /*
      * Compare two root files and return the agreement level of the 
      * comparsion

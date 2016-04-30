@@ -1,11 +1,11 @@
 #include <unistd.h>
-#include <cstring>
-#include "dbg.h"
 #include <string>
-#include <fstream>
+#include "dbg.h"
 #include "root_file_comparator.h"
 
 using namespace std;
+
+bool debug_mode;
 
 static void get_ignored_classes(set<string> &ignored_classes, char *ignored_classes_fn) 
 {
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 {
     Agree_lv al = Not_eq;
     bool fn_opts = false;
-    bool debug_opts = false;
+    debug_mode = false;
     int opt = 0;
     string compare_mode = "CC";
     string cmp_mode_str = "COMPRESS COMPARE";
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     ignored_classes.insert("TFile");
     ignored_classes.insert("TDirectory");
     ignored_classes.insert("KeysList");
-    Rootfile_comparator rfc = Rootfile_comparator(debug_opts);
+    Rootfile_comparator rfc = Rootfile_comparator();
 
     while((opt = getopt(argc, argv, "hf:m:l:c:d")) != -1) {
 
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
                 break;
 
             case 'd':
-                debug_opts = true;
+                debug_mode = true;
                 break;
 
             default:
@@ -95,8 +95,6 @@ int main(int argc, char *argv[])
 
         }
     }
-
-    rfc = Rootfile_comparator(debug_opts);
 
     if(fn_opts == false) {
         cout << "Please specified two root files." <<endl;
