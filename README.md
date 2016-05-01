@@ -81,5 +81,4 @@ examples can be found in `sample_root_files` folder.
 
 ### Benchmark
 
-![small root files](tests/BEAN_GTV7G_V01_CV03.png =200x150)
-
+<img src="tests/BEAN_GTV7G_V01_CV03.png" alt="alt text" width="200" height="150">
