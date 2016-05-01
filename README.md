@@ -81,11 +81,11 @@ examples can be found in `sample_root_files` folder.
 
 ### Benchmark
 
-1. Large root file (1-4GB)
+1. Running `root_diff` on GB level files
         ![minus](tests/minus.png)
 
-2. Medium root file (200-500MB)
+2. Running `root_diff` on root files larger than 250MB
         ![DY4JetsToLL](tests/DY4JetsToLL.png)
 
-3. Small root file (90-200MB)
+3. Running `root_diff` on root files range from 70MB to 200MB 
         ![BEAN](tests/BEAN_GTV7G_V01_CV03.png)
