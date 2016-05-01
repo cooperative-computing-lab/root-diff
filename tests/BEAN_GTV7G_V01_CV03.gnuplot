@@ -1,5 +1,5 @@
 set output "BEAN_GTV7G_V01_CV03.eps"
-set terminal postscript eps enhanced size 200, 150
+set terminal postscript eps enhanced
 set title "Root diff on BEAN_GTV7G_V01_CV03"
 set xlabel "Size/M"
 set ylabel "Time/S"
