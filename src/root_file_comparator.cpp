@@ -110,7 +110,7 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
 
     bool logic_eq = true, strict_eq = true, exact_eq = true;
   
-    // Create log file 
+    // Create log file
     ofstream log_f;
     if (!log_f) { 
         cout << "cannot create log file" << endl;
@@ -167,7 +167,7 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
         }
 
         if (!roc->logic_cmp(obj_info_1, obj_info_2)) {
-
+            
             log_f << " Instance of " << obj_info_1->class_name << 
                 " in "<< fn_1 << " at " << cur_1
                 << " is NOT LOGICALLY EQUAL to " << " Instance of " 
@@ -194,7 +194,7 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
         if (ignored_classes.find(class_name_str_1) == ignored_classes.end()) {
             
             if (!roc->strict_cmp(obj_info_1, f_1, obj_info_2, f_2)) {
-               
+                
                 log_f << " Instance of " << obj_info_1->class_name << 
                     " in "<< fn_1 << " at " << cur_1
                     << " is NOT STRICTLY EQUAL to " << " Instance of " 
@@ -238,6 +238,7 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
 
     if ((cur_1 >= f1_end && cur_2 < f2_end) || 
             (cur_1 < f1_end && cur_2 >= f2_end)) {
+
         log_f << "Number of objects in " << fn_1 << " and " << fn_2 << " are not equal."<< endl;
         log_f.close();
         return Not_eq;

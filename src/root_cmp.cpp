@@ -22,7 +22,7 @@ static void usage()
     cout << "Use: root_cmp [options] -- command-line-and-options" << endl;
     cout << endl;
     cout << "-c         Path to the user specified file, which records ignored classes" << endl; 
-    cout << "-l         Write details to log (i.e. -l /path/to/logfile)" << endl;
+    cout << "-l         Enable log mode and write details to log (i.e. -l /path/to/logfile)" << endl;
     cout << "-m         Specify compare mode (i.e. CC, UC)." << endl;
     cout << "-f         Specify input files (i.e. -f file1,file2)." << endl;
     cout << "-d         Enable debug mode." << endl;
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     string compare_mode = "CC";
     string cmp_mode_str = "COMPRESS COMPARE";
     string agree_lv = "LOGICAL";
-    string log_fn = string();
+    string log_fn = string("root_diff.log");
     char *tmp_f_name = NULL, *fn1 = NULL, *fn2 = NULL;
     char *ignored_classes_fn = NULL;
 
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
         delete [] fn2;
     }
 
-    exit(0);
+    return 0; 
 
 error:
     if(fn1 != NULL) {
@@ -165,6 +165,6 @@ error:
     if(fn2 != NULL) {
         delete [] fn2;
     }
-    exit(1);
+    return 1;
 }
 
