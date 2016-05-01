@@ -1,5 +1,7 @@
 ##ROOT DIFF
 
+### Introduction
+
 This program can be used to compare two root files.
 
 There are three available mode for comparing
@@ -76,4 +78,8 @@ examples can be found in `sample_root_files` folder.
         The agreement level is LOGICAL
         Details can be found in r1_r2.log
         -----------------------------------------------------------
+
+### Benchmark
+
+![small root files](tests/BEAN_GTV7G_V01_CV03.png)
 
