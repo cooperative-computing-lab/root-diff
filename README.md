@@ -81,4 +81,4 @@ examples can be found in `sample_root_files` folder.
 
 ### Benchmark
 
-![minus](tests/minus.svg)
+![minus](tests/minus.png)
