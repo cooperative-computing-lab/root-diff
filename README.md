@@ -59,6 +59,7 @@ two root files should have same timestamp.
         ```sh
         docker run -it <image_name:tag> 
         ```
+
 ### Usage 
 
 Following are examples of using `root_cmp`, `*.root` files used in 
