@@ -3,7 +3,7 @@ FROM centos
 MAINTAINER Charles Zheng 
 
 # Required software
-RUN yum install -y gcc wget gcc-c++ unzip make
+RUN yum install -y gcc wget gcc-c++ unzip make numpy
 # Required libs
 RUN yum install -y libSM libX11 libXext libXpm libXft
 # Get root 6.04 binary
