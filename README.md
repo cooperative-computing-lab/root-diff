@@ -127,4 +127,4 @@ are benchmark results.
     ![DY4JetsToLL](tests/DY4JetsToLL.png)
 
 3. Running `root_diff` on root files range from 70MB to 200MB 
-    ![BEAN](tests/BEAN-GTV7G-V01-CV03.png)
+    ![BEAN](tests/BEAN_GTV7G_V01_CV03.png)

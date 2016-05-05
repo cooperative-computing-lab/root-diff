@@ -1,6 +1,6 @@
 .PHONY: clean
 
-NAME=root_cmp
+NAME=root_diff
 BIN_DIR=bin
 SRC_DIR=src
 CC=g++
