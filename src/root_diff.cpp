@@ -16,7 +16,7 @@ static void get_ignored_classes(set<string> &ignored_classes, char *ignored_clas
     }
 }
 
-static void usage() 
+static inline void usage() 
 {
     cout << endl;
     cout << "Use: root_cmp [options] -- command-line-and-options" << endl;
@@ -24,7 +24,6 @@ static void usage()
     cout << "-c         Path to the user specified file, which records ignored classes" << endl; 
     cout << "-l         Enable log mode and write details to log (i.e. -l /path/to/logfile)" << endl;
     cout << "-m         Specify compare mode (i.e. CC, UC)." << endl;
-    cout << "-f         Specify input files (i.e. -f file1,file2)." << endl;
     cout << "-d         Enable debug mode." << endl;
     cout << endl;
 }
@@ -32,21 +31,25 @@ static void usage()
 int main(int argc, char *argv[]) 
 {
     Agree_lv al = Not_eq;
-    bool fn_opts = false;
     debug_mode = false;
     int opt = 0;
     string compare_mode = "CC";
-    string cmp_mode_str = "COMPRESS COMPARE";
-    string agree_lv = "LOGICAL";
-    string log_fn = string("root_diff.log");
-    char *tmp_f_name = NULL, *fn1 = NULL, *fn2 = NULL;
+    string cmp_mode_str = "COMPRESS COMPARE"; string agree_lv = "LOGICAL"; string log_fn = string("root_diff.log");
+    char *fn1 = NULL, *fn2 = NULL;
     char *ignored_classes_fn = NULL;
 
+    // Insert three types of class that will be ignored
     set<string> ignored_classes; 
     ignored_classes.insert("TFile");
     ignored_classes.insert("TDirectory");
     ignored_classes.insert("KeysList");
+
     Rootfile_comparator rfc = Rootfile_comparator();
+
+    extern char *optarg;
+    extern int optind, opopt;
+    int num_root_files = 0;
+    int rc = 0;
 
     while((opt = getopt(argc, argv, "hf:m:l:c:d")) != -1) {
 
@@ -62,23 +65,7 @@ int main(int argc, char *argv[])
 
             case 'h':
                 usage();
-                exit(0);
-
-            case 'f':
-                fn_opts = true;
-                tmp_f_name = strtok(optarg, ",");
-                if (!tmp_f_name) {
-                    cout << "Please specify two root files." << endl;
-                    goto error;
-                }
-                fn1 = strdup(tmp_f_name); 
-                tmp_f_name = strtok(NULL, ",");
-                if (!tmp_f_name) {
-                    cout << "Please specify two root files." << endl;
-                    goto error;
-                }
-                fn2 = strdup(tmp_f_name);
-                break;
+                return 0; 
 
             case 'c':
                 ignored_classes_fn = optarg; 
@@ -96,18 +83,33 @@ int main(int argc, char *argv[])
         }
     }
 
-    if(fn_opts == false) {
-        cout << "Please specified two root files." <<endl;
-        usage();
+    for (; optind<argc; optind++) {
+        rc = access(argv[optind], R_OK);
+        if ( rc == 0 && num_root_files == 0) {
+            fn1 = strdup(argv[optind]);
+        }
+        if ( rc == 0 && num_root_files == 1) {
+            fn2 = strdup(argv[optind]);
+        }
+
+        num_root_files ++;
+
+        if ( rc != 0) {
+            log_err("%s is not accessible.", argv[optind]);
+            goto error; 
+        }
+    }
+
+    // Check if there are two root files specified
+    if (num_root_files != 2) {
+        log_err("Please specify two root files.");
         goto error;
     }
 
-    if (log_fn.empty()) { 
-        log_fn = "root_diff.log";
-    }
-
+    // Compare two root files
     al = rfc.root_file_cmp(fn1, fn2, compare_mode.c_str(), log_fn.c_str(), ignored_classes);
 
+    // Check the agreement level
     switch(al) {
         case Logic_eq:
             break;
@@ -120,7 +122,7 @@ int main(int argc, char *argv[])
         case Not_eq:
             break;
         default:
-            cout << "Unknown Agreement Level" << endl;
+            log_err("Unknown Agreement Level"); 
             goto error;
     }
 
@@ -167,4 +169,3 @@ error:
     }
     return 1;
 }
-
