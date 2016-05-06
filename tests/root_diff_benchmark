@@ -8,13 +8,23 @@ fn_scale="none"
 dat_fn="none"
 oup_fn="none"
 
+# Initialize variables
+init_argv()
+{   
+    fn_path=$1
+    base_name=${1##*/} 
+    dat_fn="${base_name}.dat"
+    fn_scale=$2
+    gnuplot_fn="$base_name.gnuplot"
+    oup_fn="$base_name.eps"
+}
+
 # Generate entry for .data file using same size scale
 unify_data()
 {
 
     size=$(echo $1 | awk -F ' ' '{print $1}')
     fname=$(echo $1 | awk -F ' ' '{print $2}')
-    scale=${size: -1}
     size_num=$(echo $size | sed 's/.$//')
 
     if [ $scale != $2 ]
@@ -60,7 +70,6 @@ unify_data()
 gen_data_fn()
 {
 
-    dat_fn="$2.dat"
 
     # If .data file exist, remove it
     if [ -f $dat_fn ]
@@ -69,13 +78,13 @@ gen_data_fn()
     fi 
 
     # Write first entry to the .data file
-    echo "# size/$3 fname real user sys" >> $dat_fn
+    echo "# size/$fn_scale fname real user sys" >> $dat_fn
 
-    for f in $1/*.root
+    for f in $fn_path/*.root
     do
         # Get file size and file path
         fn_info=$(ls -lh $f | awk -F ' ' '{print $5" "$9}')
-        unify_data "$fn_info" $3
+        unify_data "$fn_info" $fn_scale
 
         # Call root_diff 
         run_time=$(/usr/bin/time -p /afs/crc.nd.edu/user/c/czheng2/Work/ccl_work/root_diff/bin/root_cmp -m CC -f $f,$f 2>&1 >/dev/null | tail -n3)
@@ -91,10 +100,6 @@ gen_data_fn()
 # Generate .gnuplot
 gen_gnuplot()
 {
-
-    gnuplot_fn="$1.gnuplot"
-    oup_fn="$1.eps"
-
     # Get the max time elapse
     max_time=$(sort -k 4 $dat_fn | tail -2 | head -1 | awk -F ' ' '{print$3}')
     max_int_time=$(printf "%.*f\n" 0 $max_time)
@@ -107,7 +112,7 @@ gen_gnuplot()
     echo -e "set output \"$oup_fn\"
 set terminal postscript eps enhanced
 set title \"Root diff on $base_name\"
-set xlabel \"Size/$2\"
+set xlabel \"Size/$fn_scale\"
 set ylabel \"Time/S\"
 set yrange [0:$((max_int_time + 1))]
 unset key
@@ -126,11 +131,9 @@ plot()
 main()
 {
 
-    fn_path=$1
-    base_name=${1##*/} 
-    fn_scale=$2
-    gen_data_fn $fn_path $base_name $2
-    gen_gnuplot $base_name $2
+    init_argv $1 $2
+    gen_data_fn 
+    gen_gnuplot 
     plot
 
 }
