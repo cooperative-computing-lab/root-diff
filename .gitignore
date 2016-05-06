@@ -1,3 +1,4 @@
+*.log
 bin/root_cmp
 sample_root_files/fx1_med.root
 sample_root_files/fx2_med.root
