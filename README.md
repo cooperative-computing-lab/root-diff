@@ -68,7 +68,7 @@ examples can be found in `sample_root_files` folder.
 1. Two root files are exactlly equal to each other 
 
     ```sh
-    bin/root_diff -m CC -l r1_r1.log -f sample_root_files/r1.root,sample_root_files/r1.root
+    bin/root_diff -m CC -l r1_r1.log sample_root_files/r1.root sample_root_files/r1.root
     ```
     
     The expected output will be:
@@ -85,7 +85,7 @@ examples can be found in `sample_root_files` folder.
 2. Two root files are stricly equal to each other
    
     ```sh 
-    bin/root_diff -m UC -l fx1_fx2.log -f sample_root_files/fx1.root,sample_root_files/fx2.root
+    bin/root_diff -m UC -l fx1_fx2.log sample_root_files/fx1.root sample_root_files/fx2.root
     ```
     The expected output will be:
        
@@ -101,7 +101,7 @@ examples can be found in `sample_root_files` folder.
 3. Two root files are logically equal to each other
 
     ```sh
-    bin/root_diff -m CC -l r1_r2.log -f sample_root_files/r1.root,sample_root_files/r2.root
+    bin/root_diff -m CC -l r1_r2.log sample_root_files/r1.root sample_root_files/r2.root
     ```
 
     The expected output will be:
