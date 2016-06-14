@@ -40,12 +40,14 @@ public:
     virtual bool strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj_info_2, TFile *f2) = 0;
 };
 
+// Compressed comparator
 class Cmprs_comparator : public Rootobj_comparator
 {
 public:
    bool strict_cmp(Obj_info *obj_info_1, TFile *f1, Obj_info *obj_info_2, TFile *f2); 
 };
 
+// Uncompressed comparator
 class Uncmprs_comparator : public Rootobj_comparator
 {
 public:

@@ -19,4 +19,4 @@ $(BIN_DIR)/$(NAME):$(OBJS)
 	$(CC) -I$(SRC_DIR) $(CFLAGS) $^ -o $@ `$(PRE_PROC)` 
 
 clean:
-	@rm $(BIN_DIR)/$(NAME)
+	rm $(BIN_DIR)/$(NAME)

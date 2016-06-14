@@ -34,7 +34,9 @@ int main(int argc, char *argv[])
     debug_mode = false;
     int opt = 0;
     string compare_mode = "CC";
-    string cmp_mode_str = "COMPRESS COMPARE"; string agree_lv = "LOGICAL"; string log_fn = string("root_diff.log");
+    string cmp_mode_str = "COMPRESS COMPARE"; 
+    string agree_lv = "LOGICAL"; 
+    string log_fn = string("root_diff.log");
     char *fn1 = NULL, *fn2 = NULL;
     char *ignored_classes_fn = NULL;
 

@@ -54,6 +54,7 @@ static Obj_info *get_obj_info(char *header_array, Long64_t cur, const TFile *f)
     for (int i=0; i<class_name_len; i++) {
         frombuf(header, &(obj_info->class_name[i]));
     }
+
     obj_info->class_name[int(class_name_len)] = '\0';
 
     if (cur == f->GetSeekFree()) {
