@@ -67,7 +67,7 @@ static unsigned char *buffer_uncomprs(Obj_info *obj_info, TFile *f)
 bool Rootobj_comparator::logic_cmp(Obj_info *obj_info_1, Obj_info *obj_info_2)
 {
 
-    if ((obj_info_1->obj_len) != (obj_info_2->obj_len)) {
+    if ((obj_info_1->nbytes) != (obj_info_2->nbytes)) {
         return false;
     }
 

@@ -45,6 +45,8 @@ int main(int argc, char *argv[])
     ignored_classes.insert("TFile");
     ignored_classes.insert("TDirectory");
     ignored_classes.insert("KeysList");
+    ignored_classes.insert("StreamerInfo");
+    ignored_classes.insert("FreeSegments");
 
     Rootfile_comparator rfc = Rootfile_comparator();
 

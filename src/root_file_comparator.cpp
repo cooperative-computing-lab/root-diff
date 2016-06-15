@@ -12,6 +12,7 @@ static Obj_info *get_obj_info(char *header_array, Long64_t cur, const TFile *f)
     Obj_info *obj_info = new Obj_info();
     char *header;
     char class_name_len;
+    char obj_name_len;
 
     header = header_array;
     frombuf(header, &(obj_info->nbytes));
@@ -25,17 +26,6 @@ static Obj_info *get_obj_info(char *header_array, Long64_t cur, const TFile *f)
     frombuf(header, &datime); 
     frombuf(header, &(obj_info->key_len));   
     frombuf(header, &(obj_info->cycle));   
-
-    if (debug_mode) {
-        debug("============%s obj info=============", obj_info->class_name);
-        debug("version: %d", version_key);
-        debug("object len: %d", obj_info->obj_len);
-        debug("datime: %d", datime);
-        debug("key len: %d", obj_info->key_len);
-        debug("# of cycles: %d", obj_info->cycle); 
-        debug("====================================");
-    }
-
 
     if (version_key > 1000) {
         //for large file the type of seek_key and seek_pdir is long
@@ -57,6 +47,7 @@ static Obj_info *get_obj_info(char *header_array, Long64_t cur, const TFile *f)
 
     obj_info->class_name[int(class_name_len)] = '\0';
 
+    
     if (cur == f->GetSeekFree()) {
         strlcpy(obj_info->class_name, "FreeSegments", NAME_LEN);
     }
@@ -67,8 +58,30 @@ static Obj_info *get_obj_info(char *header_array, Long64_t cur, const TFile *f)
         strlcpy(obj_info->class_name, "KeysList", NAME_LEN);
     }
 
+    frombuf(header, &obj_name_len);
+    for (int i=0; i<obj_name_len; i++) {
+        frombuf(header, &(obj_info->obj_name[i]));
+    }
+
+    obj_info->obj_name[int(obj_name_len)] = '\0';
+
     obj_info->date = 0;
     obj_info->time = 0;
+
+    if (debug_mode) {
+        debug("============%s obj info=============", obj_info->class_name);
+        debug("name: %s", obj_info->obj_name);
+        debug("class: %s", obj_info->class_name);
+        debug("seek_key: %ld", obj_info->seek_key); 
+        debug("version: %d", version_key);
+        debug("nbytes: %d", obj_info->nbytes);
+        debug("object len: %d", obj_info->obj_len);
+        debug("datime: %d", datime);
+        debug("key len: %d", obj_info->key_len);
+        debug("# of cycles: %d", obj_info->cycle); 
+        debug("====================================");
+        cout << endl;
+    }
 
     TDatime::GetDateTime(datime, obj_info->date, obj_info->time);
     return obj_info;
@@ -86,7 +99,8 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
         set<string> ignored_classes) 
 {
     Rootobj_comparator *roc;   
-
+    
+    // Get comparison mode
     if (!strcmp(mode, "CC")) {
         roc = new Cmprs_comparator();
     } else if (!strcmp(mode, "UC")) {
@@ -96,6 +110,7 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
         exit(1);
     } 
 
+    // Check if input files are accessible
     if (access(fn_1, F_OK) == -1) {
         cout << fn_1 << " does not exist." << endl;
         exit(1);
@@ -181,8 +196,6 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
     
     TFile *f_2 = new TFile(fn_2);
 
-    Int_t nwheader;
-    nwheader = 64;
     Int_t nread_2 = nwheader;
 
     Long64_t cur_2 = HEADER_LEN, 
@@ -194,6 +207,7 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
 
     string class_name_str_2;
     vector<pair<Obj_info*, Obj_info*>> objs_pair;
+    vector<pair<Obj_info*, Obj_info*>>::iterator vctr_p_itr;
 
     while(cur_2 < f2_end) {
         f_2->Seek(cur_2);
@@ -225,38 +239,42 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
         }
 
         if (ignored_classes.find(class_name_str_2) == ignored_classes.end()) {
-            vector<Obj_info*>::iterator vctr_it;
-
-            for (vctr_it = objs_info.begin(); vctr_it != objs_info.end();) {
-                if(roc->logic_cmp((*vctr_it), obj_info_2)) {
-                    pair<Obj_info*, Obj_info*> obj_pair((*vctr_it), obj_info_2);
-                    vctr_it = objs_info.erase(vctr_it)
+            // If current class is not in the ignored classes list
+            vector<Obj_info*>::iterator vctr_itr;
+            bool find_match = false;
+            for (vctr_itr = objs_info.begin(); vctr_itr != objs_info.end(); ++vctr_itr) {
+                if(roc->logic_cmp((*vctr_itr), obj_info_2)) {
+                    pair<Obj_info*, Obj_info*> obj_pair((*vctr_itr), obj_info_2);
+                    // every obj_info can only be used once
+                    vctr_itr = objs_info.erase(vctr_itr);
                     objs_pair.push_back(obj_pair);
-                    continue;
-                } else {
-                    ++vctr_it;
+                    find_match = true;
+                    break;
                 } 
             } 
 
-            // does not found matched object in file 1          
-            log_f << " Cannot find matched object for the instance of " << 
-                obj_info_2->class_name << " in " << fn_2 << " at " << cur_2 << endl;
-
-            logic_eq = false; 
-            strict_eq = false;
-            exact_eq = false;
-            goto end;
+            if (!find_match) {
+                // does not found matched object in file 1          
+                log_f << " Cannot find matched object for the instance of " << 
+                    obj_info_2->class_name << " in " << fn_2 << " at " << cur_2 << endl;
+    
+                logic_eq = false; 
+                strict_eq = false;
+                exact_eq = false;
+                goto end;
+            }
         }
 
         cur_2 += obj_info_2->nbytes;
     }
-
+    // After iterating all objects in file 2, if there are obj_info left in file 1, file 1 
+    // is not logically equal to file 2
     if(!objs_info.empty()) {
         vector<Obj_info*>::iterator vctr_itr; 
-        for(vctr_it = objs_info.begin(); vctr_it != objs_info.end(); ++vctr_it) {
+        for(vctr_itr = objs_info.begin(); vctr_itr != objs_info.end(); ++vctr_itr) {
             log_f << " Cannot find matched object for the instance of " << 
-                (*vctr_it)->class_name << " in " << fn_1 << " at " << (*vctr_it)->seek_key << endl;
-            delete (*vctr_it);
+                (*vctr_itr)->class_name << " in " << fn_1 << " at " << (*vctr_itr)->seek_key << endl;
+            delete (*vctr_itr);
         }
         logic_eq = false; 
         strict_eq = false;
@@ -269,28 +287,28 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
     // strictly/exactly agreed. If every entry is strictly/exactly agreed, 
     // we say that file 1 is strictly/exactly equal to file 2. 
 
-    vector<pair<Obj_info*, Obj_info*>>::iterator vctr_p_itr;
     for(vctr_p_itr = objs_pair.begin(); vctr_p_itr != objs_pair.end(); ++vctr_p_itr) {
-        if(!roc->strict_cmp((*vctr_p_itr.first), f_1, (*vctr_p_itr.second), f_2)) {
 
-            log_f << " Instance of " << (*vctr_p_itr.first)->class_name << 
-                " in "<< fn_1 << " at " << (*vctr_p_itr.first)->seek_key
+        if(!roc->strict_cmp( (*vctr_p_itr).first, f_1, (*vctr_p_itr).second, f_2)) {
+
+            log_f << " Instance of " << (*vctr_p_itr).first->class_name << 
+                " in "<< fn_1 << " at " << (*vctr_p_itr).first->seek_key
                 << " is NOT STRICTLY EQUAL to " << " Instance of " 
-                << (*vctr_p_itr.second)->class_name << " class in " << fn_2 << " at " 
-                << (*vctr_p_itr.second) << endl;
+                << (*vctr_p_itr).second->class_name << " class in " << fn_2 << " at " 
+                << (*vctr_p_itr).second->seek_key << endl;
 
             strict_eq = false;
             exact_eq = false;
 
         } else {
 
-            if(!roc->exact_cmp(vctr_p_itr.first, vctr_p_itr.second)) {
+            if(!roc->exact_cmp((*vctr_p_itr).first, (*vctr_p_itr).second)) {
 
-               log_f << " Instance of " << (*vctr_p_itr.first)->class_name << 
-                   " in "<< fn_1 << " at " << (*vctr_p_itr.first)->seek_key
+               log_f << " Instance of " << (*vctr_p_itr).first->class_name << 
+                   " in "<< fn_1 << " at " << (*vctr_p_itr).first->seek_key
                    << " is NOT EXACTLY EQUAL to " << " Instance of " 
-                   << (*vctr_p_itr.second)->class_name << " class in " << fn_2 << " at " 
-                   << (*vctr_p_itr.second)->seek_key << endl;
+                   << (*vctr_p_itr).second->class_name << " class in " << fn_2 << " at " 
+                   << (*vctr_p_itr).second->seek_key << endl;
 
                 exact_eq = false;
             }
@@ -303,10 +321,9 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
     }
 
 end:
-    vector<pair<Obj_info*, Obj_info*>>::iterator vctr_p_itr;
     for(vctr_p_itr = objs_pair.begin(); vctr_p_itr != objs_pair.end(); ++vctr_p_itr) {
-        delete(*vctr_p_itr.first);
-        delete(*vctr_p_itr.second);
+        delete (*vctr_p_itr).first;
+        delete (*vctr_p_itr).second;
     }
 
     tmr.reset();

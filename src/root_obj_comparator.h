@@ -27,6 +27,7 @@ typedef struct Obj_info {
     Long64_t seek_key, seek_pdir;
 
     char class_name[NAME_LEN];
+    char obj_name[NAME_LEN];
 
 } Obj_info;
 
