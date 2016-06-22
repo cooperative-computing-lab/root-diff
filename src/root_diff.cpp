@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
     // Insert three types of class that will be ignored
     set<string> ignored_classes; 
     ignored_classes.insert("TFile");
+    ignored_classes.insert("TTree");
     ignored_classes.insert("TDirectory");
     ignored_classes.insert("KeysList");
     ignored_classes.insert("StreamerInfo");
