@@ -27,12 +27,12 @@ unify_data()
     fname=$(echo $1 | awk -F ' ' '{print $2}')
     size_num=$(echo $size | sed 's/.$//')
 
-    if [ $scale != $2 ]
+    if [ "$scale" != $2 ]
     then
 
-        if [ $scale = "K" ]
+        if [ "$scale" = "K" ]
         then
-            if [ $2 = "M" ]
+            if [ "$2" = "M" ]
             then
                 size_num=$(echo "$size_num 1000" | awk '{printf "%0.4f", $1 / $2}')
             else
@@ -40,9 +40,9 @@ unify_data()
             fi
         fi
 
-        if [ $scale = "M" ]
+        if [ "$scale" = "M" ]
         then
-            if [ $2 = "K" ]
+            if [ "$2" = "K" ]
             then
                 size_num=$(echo "$size_num 1000" | awk '{printf "%d", $1 * $2}')
             else
@@ -50,9 +50,9 @@ unify_data()
             fi
         fi
 
-        if [ $scale = "G" ]
+        if [ "$scale" = "G" ]
         then
-            if [ $2 = "K" ]
+            if [ "$2" = "K" ]
             then
                 size_num=$(echo "$size_num 1000000" | awk '{printf "%d", $1 * $2}')
             else
@@ -87,7 +87,7 @@ gen_data_fn()
         unify_data "$fn_info" $fn_scale
 
         # Call root_diff 
-        run_time=$(/usr/bin/time -p /afs/crc.nd.edu/user/c/czheng2/Work/ccl_work/root_diff/bin/root_cmp -m CC -f $f,$f 2>&1 >/dev/null | tail -n3)
+        run_time=$(/usr/bin/time -p /afs/crc.nd.edu/user/c/czheng2/Work/ccl_work/root_diff/bin/root_diff -m CC $f $f 2>&1 >/dev/null | tail -n3)
         # Get the value of "real, user, sys" 
         run_time_data=$(echo $run_time | awk -F ' ' '{print $2" "$4" "$6}')
         # Each entry of .data file content the file information and the running time of root_diff

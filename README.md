@@ -121,10 +121,10 @@ We benchmark the performace of the `root_diff` on different scales of root files
 are benchmark results. 
 
 1. Running `root_diff` on GB level files
-    ![minus](tests/minus.png)
+    ![minus](tests/root_gb.png)
 
-2. Running `root_diff` on root files larger than 250MB
-    ![DY4JetsToLL](tests/DY4JetsToLL.png)
+2. Running `root_diff` on MB level files 
+    ![DY4JetsToLL](tests/root_mb.png)
 
 3. Running `root_diff` on root files range from 70MB to 200MB 
     ![BEAN](tests/BEAN_GTV7G_V01_CV03.png)
