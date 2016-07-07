@@ -120,8 +120,8 @@ examples can be found in `sample_root_files` folder.
 We benchmark the performace of the `root_diff` on different scales of root files. Followings
 are benchmark results. 
 
-1. Running `root_diff` on GB level files
-    ![minus](tests/root_gb.png)
+1. Running `root_diff` on GB level files, there is an outlier `/hadoop/store/user/awoodard/minus/BEAN_53xOn53x_V04_skims/WWJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola_Summer12_DR53X-PU_S10_START53_V7A-v1_skimDilep_BEAN_53xOn53x_V04_CV02/d821efbc3befd142036a29052ef27c00/output_3_1_azi.root`
+    ![minus](tests/root_GB.png)
 
 2. Running `root_diff` on MB level files 
-    ![DY4JetsToLL](tests/root_mb.png)
+    ![DY4JetsToLL](tests/root_MB.png)

@@ -70,7 +70,6 @@ unify_data()
 gen_data_fn()
 {
 
-
     # If .data file exist, remove it
     if [ -f $dat_fn ]
     then
