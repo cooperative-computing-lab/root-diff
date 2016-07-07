@@ -125,3 +125,13 @@ are benchmark results.
 
 2. Running `root_diff` on MB level files 
     ![DY4JetsToLL](tests/root_MB.png)
+
+### TODO
+
+1. Outlier is caused by memory limit or file structure
+
+2. Have 10 files can fit in the memory and 10 files can not fit in the memeory
+
+3. Make y axis MB/s (throughput)
+
+4. Have bar chart for root files with different level of complexity
