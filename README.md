@@ -125,3 +125,10 @@ are benchmark results.
 
 2. Running `root_diff` on MB level files 
     ![DY4JetsToLL](tests/root_MB.png)
+
+3. Running `root_diff` on `tth` and `ttjets` files using CC mode
+    ![tth_ttjets](tests/tth_ttjets/tth_ttjets.png)
+
+4. Running `root_diff` on `tth` and `ttjets` files using UC mode
+    ![tth_ttjets_UC](tests/tth_ttjets/tth_ttjets_UC.png)
+
