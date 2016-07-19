@@ -132,3 +132,12 @@ are benchmark results.
 4. Running `root_diff` on `tth` and `ttjets` files using UC mode
     ![tth_ttjets_UC](tests/tth_ttjets/tth_ttjets_UC.png)
 
+### TODO
+
+1. Outlier is caused by memory limit or file structure
+
+2. Have 10 files can fit in the memory and 10 files can not fit in the memeory
+
+3. Make y axis MB/s (throughput)
+
+4. Have bar chart for root files with different level of complexity
