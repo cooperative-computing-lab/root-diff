@@ -1,11 +1,12 @@
 # size/G fname real user sys
-3.9 /data/czheng2/sample_root/root_GB/246E4847-FDE6-E311-9052-0025905964B6.root 13.03 11.10 1.55
-1.8 /data/czheng2/sample_root/root_GB/2C1BE9D2-BCE6-E311-905B-002618943966.root 3.57 2.83 0.74
-2.9 /data/czheng2/sample_root/root_GB/9AB48E1A-09E2-E311-B4CE-003048D15DDA.root 7.53 6.23 1.30
-3.6 /data/czheng2/sample_root/root_GB/9C31D59A-E2E5-E311-BDC1-0025905A613C.root 10.72 9.31 1.41
-3.1 /data/czheng2/sample_root/root_GB/A45ED9CA-1EE1-E311-BD20-0026189438F2.root 8.50 7.26 1.23
-3.3 /data/czheng2/sample_root/root_GB/B4B37B6E-04E7-E311-B15A-003048678B0C.root 9.00 7.70 1.30
-2.4 /data/czheng2/sample_root/root_GB/E62A1965-C2E1-E311-ABCC-0026189438DC.root 5.53 4.51 1.02
-2.2 /data/czheng2/sample_root/root_GB/FC6C525D-0CE6-E311-8EA3-0025905964C2.root 4.79 3.77 1.02
-4.0 /data/czheng2/sample_root/root_GB/FEF0177C-E8E5-E311-9756-00304867906C.root 12.74 11.04 1.70
-6.0 /data/czheng2/sample_root/root_GB/output_3_1_azi.root 74.95 72.28 2.69
+3.9 /data/czheng2/sample_root/root_GB/246E4847-FDE6-E311-9052-0025905964B6.root 12.61 11.02 1.59
+1.8 /data/czheng2/sample_root/root_GB/2C1BE9D2-BCE6-E311-905B-002618943966.root 3.68 2.86 0.83
+2.9 /data/czheng2/sample_root/root_GB/9AB48E1A-09E2-E311-B4CE-003048D15DDA.root 7.45 6.21 1.24
+3.6 /data/czheng2/sample_root/root_GB/9C31D59A-E2E5-E311-BDC1-0025905A613C.root 10.72 9.21 1.50
+3.1 /data/czheng2/sample_root/root_GB/A45ED9CA-1EE1-E311-BD20-0026189438F2.root 8.60 7.21 1.39
+3.3 /data/czheng2/sample_root/root_GB/B4B37B6E-04E7-E311-B15A-003048678B0C.root 9.01 7.66 1.35
+2.4 /data/czheng2/sample_root/root_GB/E62A1965-C2E1-E311-ABCC-0026189438DC.root 5.60 4.46 1.13
+2.2 /data/czheng2/sample_root/root_GB/FC6C525D-0CE6-E311-8EA3-0025905964C2.root 4.71 3.83 0.88
+4.0 /data/czheng2/sample_root/root_GB/FEF0177C-E8E5-E311-9756-00304867906C.root 12.75 10.99 1.77
+6.8 /data/czheng2/sample_root/root_GB/output_1_1_LzP.root 97.39 94.18 3.25
+6.0 /data/czheng2/sample_root/root_GB/output_3_1_azi.root 75.31 72.32 3.02
