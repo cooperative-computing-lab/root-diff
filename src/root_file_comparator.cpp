@@ -248,6 +248,7 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
                     // every obj_info can only be used once
                     vctr_itr = objs_info.erase(vctr_itr);
                     objs_pair.push_back(obj_pair);
+                    log_f << obj_info_2 << "is compared" << endl;
                     find_match = true;
                     break;
                 } 
