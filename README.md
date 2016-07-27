@@ -141,3 +141,7 @@ are benchmark results.
 3. Make y axis MB/s (throughput)
 
 4. Have bar chart for root files with different level of complexity
+
+5. count the number of comparisons
+
+6. statics about the comparisons of different tobject
