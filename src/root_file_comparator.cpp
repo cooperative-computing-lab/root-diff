@@ -94,12 +94,18 @@ error:
     exit(1);
 }
 
+
 Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2, 
         const char *mode, const char *log_fn, 
         set<string> ignored_classes) 
 {
     Rootobj_comparator *roc;   
-    
+    int num_obj_in_f1 = 0,
+        num_obj_in_f2 = 0,
+        num_logical_equal = 0,
+        num_exact_equal = 0,    
+        num_strict_equal = 0;
+
     // Get comparison mode
     if (!strcmp(mode, "CC")) {
         roc = new Cmprs_comparator();
@@ -153,6 +159,8 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
     vector<Obj_info*> objs_info; 
 
     while(cur_1 < f1_end) {
+
+        num_obj_in_f1 ++;
         f_1->Seek(cur_1);
         
         if (cur_1 + nread_1 >= f1_end) {
@@ -210,6 +218,8 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
     vector<pair<Obj_info*, Obj_info*>>::iterator vctr_p_itr;
 
     while(cur_2 < f2_end) {
+
+        num_obj_in_f2++;
         f_2->Seek(cur_2);
         
         if (cur_2 + nread_2 >= f2_end) {
@@ -244,11 +254,12 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
             bool find_match = false;
             for (vctr_itr = objs_info.begin(); vctr_itr != objs_info.end(); ++vctr_itr) {
                 if(roc->logic_cmp((*vctr_itr), obj_info_2)) {
+                    num_logical_equal ++;
                     pair<Obj_info*, Obj_info*> obj_pair((*vctr_itr), obj_info_2);
                     // every obj_info can only be used once
                     vctr_itr = objs_info.erase(vctr_itr);
                     objs_pair.push_back(obj_pair);
-                    log_f << obj_info_2 << "is compared" << endl;
+                    log_f << obj_info_2->class_name << " is compared" << endl;
                     find_match = true;
                     break;
                 } 
@@ -256,31 +267,35 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
 
             if (!find_match) {
                 // does not found matched object in file 1          
-                log_f << " Cannot find matched object for the instance of " << 
-                    obj_info_2->class_name << " in " << fn_2 << " at " << cur_2 << endl;
+                log_f << "Cannot find matched object for the instance of " << 
+                    obj_info_2->class_name << " in " << fn_2 << " at " << cur_2 
+                    << " with size" << (*vctr_itr)->nbytes << endl;
     
                 logic_eq = false; 
                 strict_eq = false;
                 exact_eq = false;
-                goto end;
+                // goto end;
             }
         }
 
         cur_2 += obj_info_2->nbytes;
     }
+
     // After iterating all objects in file 2, if there are obj_info left in file 1, file 1 
     // is not logically equal to file 2
+    
     if(!objs_info.empty()) {
         vector<Obj_info*>::iterator vctr_itr; 
         for(vctr_itr = objs_info.begin(); vctr_itr != objs_info.end(); ++vctr_itr) {
-            log_f << " Cannot find matched object for the instance of " << 
-                (*vctr_itr)->class_name << " in " << fn_1 << " at " << (*vctr_itr)->seek_key << endl;
+            log_f << "Cannot find matched object for the instance of " << 
+                (*vctr_itr)->class_name << " in " << fn_1 << " at " << (*vctr_itr)->seek_key 
+                << " with size "<< (*vctr_itr)->nbytes << endl;
             delete (*vctr_itr);
         }
         logic_eq = false; 
         strict_eq = false;
         exact_eq = false;
-        goto end;
+        // goto end;
     }
 
     // Compare the two objects in same entry. If the two objects are 
@@ -292,7 +307,7 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
 
         if(!roc->strict_cmp( (*vctr_p_itr).first, f_1, (*vctr_p_itr).second, f_2)) {
 
-            log_f << " Instance of " << (*vctr_p_itr).first->class_name << 
+            log_f << "Instance of " << (*vctr_p_itr).first->class_name << 
                 " in "<< fn_1 << " at " << (*vctr_p_itr).first->seek_key
                 << " is NOT STRICTLY EQUAL to " << " Instance of " 
                 << (*vctr_p_itr).second->class_name << " class in " << fn_2 << " at " 
@@ -302,16 +317,19 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
             exact_eq = false;
 
         } else {
-
+            
+            num_strict_equal ++;
             if(!roc->exact_cmp((*vctr_p_itr).first, (*vctr_p_itr).second)) {
 
-               log_f << " Instance of " << (*vctr_p_itr).first->class_name << 
+               log_f << "Instance of " << (*vctr_p_itr).first->class_name << 
                    " in "<< fn_1 << " at " << (*vctr_p_itr).first->seek_key
                    << " is NOT EXACTLY EQUAL to " << " Instance of " 
                    << (*vctr_p_itr).second->class_name << " class in " << fn_2 << " at " 
                    << (*vctr_p_itr).second->seek_key << endl;
 
                 exact_eq = false;
+            } else {
+                num_exact_equal ++;
             }
 
         }
@@ -327,11 +345,19 @@ end:
         delete (*vctr_p_itr).second;
     }
 
+
     tmr.reset();
     t = tmr.elapsed();
     log_f << endl; 
-    log_f << "Comparison took: " << t << endl;
-
+    log_f << "================= Comparison summary =================" << endl;
+    log_f << "Time elapsed: " << t << endl;
+    
+    log_f << "Number of objects in file 1 is: "<< num_obj_in_f1 << endl;
+    log_f << "Number of objects in file 2 is: "<< num_obj_in_f2 << endl;
+    log_f << "Number of logical equivalent: " << num_logical_equal << endl;
+    log_f << "Number of strict equivalent: "<< num_strict_equal << endl;
+    log_f << "Number of exact equivalent: "<< num_exact_equal <<endl;
+    
     log_f.close();
 
     if(exact_eq){
