@@ -134,14 +134,8 @@ are benchmark results.
 
 ### TODO
 
-1. Outlier is caused by memory limit or file structure
+1. statics about the comparisons of different tobject
 
-2. Have 10 files can fit in the memory and 10 files can not fit in the memeory
+2. Caculate the similarity of different root files
 
-3. Make y axis MB/s (throughput)
-
-4. Have bar chart for root files with different level of complexity
-
-5. count the number of comparisons
-
-6. statics about the comparisons of different tobject
+3. extract the object information of the different root object
