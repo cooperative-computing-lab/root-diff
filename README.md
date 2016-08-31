@@ -136,6 +136,10 @@ are benchmark results.
 
 1. statics about the comparisons of different tobject
 
-2. Caculate the similarity of different root files
+2. caculate the similarity of different root files
 
 3. extract the object information of the different root object
+
+4. list the order of object cached in root
+
+5. compare the order difference of two root files
