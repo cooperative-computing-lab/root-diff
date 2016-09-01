@@ -194,6 +194,7 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
             objs_info.push_back(obj_info_1);
         } else {
             log_f << class_name_str_1 << " in file 1 with index " << obj_info_1->obj_index << 
+                " and object name " << obj_info_1->obj_name <<
                 " is ignored" << endl;
         }
 
@@ -263,9 +264,11 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
                     pair<Obj_info*, Obj_info*> obj_pair((*vctr_itr), obj_info_2);
                     // every obj_info can only be used once
                     log_f << (*vctr_itr)->class_name << " with index " << 
-                        (*vctr_itr)->obj_index << " in file 1 is structual-equal to " <<
+                        (*vctr_itr)->obj_index << " with object name " << 
+                        (*vctr_itr)->obj_name << " in file 1 is structual-equal to " <<
                         obj_info_2->class_name << " with index " << 
-                        obj_info_2->obj_index << " in file 2 " << endl;
+                        obj_info_2->obj_index << " and object name " << obj_info_2->obj_name << " in file 2 " << endl;
+
                     vctr_itr = objs_info.erase(vctr_itr);
                     objs_pair.push_back(obj_pair);
                     
@@ -278,7 +281,9 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
                 // does not found matched object in file 1          
                 log_f << "Cannot find matched object for the instance of " << 
                     obj_info_2->class_name << " in file 2 with index " 
-                    << obj_info_2->obj_index << " with size " << (*vctr_itr)->nbytes << endl;
+                    << obj_info_2->obj_index << " with size " << (*vctr_itr)->nbytes 
+                    << ", cycle number " << (*vctr_itr)->cycle  << 
+                    " and object name " << (*vctr_itr)->obj_name << endl;
     
                 logic_eq = false; 
                 strict_eq = false;
@@ -286,8 +291,9 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
                 // goto end;
             }
         } else {
-            log_f << class_name_str_2 << " in file 2 with index " << obj_info_2->obj_index 
-                << " is ignored" << endl;
+            log_f << class_name_str_2 << " in file 2 with index " << obj_info_2->obj_index <<
+                " and object name " << obj_info_1->obj_name <<
+                " is ignored" << endl;
         }
 
         cur_2 += obj_info_2->nbytes;
@@ -301,13 +307,14 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
         for(vctr_itr = objs_info.begin(); vctr_itr != objs_info.end(); ++vctr_itr) {
             log_f << "Cannot find matched object for the instance of " << 
                 (*vctr_itr)->class_name << " in file 1 with index " << 
-                (*vctr_itr)->obj_index << " with size "<< (*vctr_itr)->nbytes << endl;
+                (*vctr_itr)->obj_index << " with size "<< (*vctr_itr)->nbytes 
+                << ", cycle number " << (*vctr_itr)->cycle  <<
+                " and object name " << (*vctr_itr)->obj_name << endl;
             delete (*vctr_itr);
         }
         logic_eq = false; 
         strict_eq = false;
         exact_eq = false;
-        // goto end;
     }
 
     // Compare the two objects in same entry. If the two objects are 
@@ -320,9 +327,11 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
         if(!roc->strict_cmp( (*vctr_p_itr).first, f_1, (*vctr_p_itr).second, f_2)) {
 
             log_f << (*vctr_p_itr).first->class_name << 
-                " in file 1 with index " << (*vctr_p_itr).first->obj_index
-                << " is NOT CONTENT-EQUAL to " << (*vctr_p_itr).second->class_name 
-                << " in file 2 with index " << (*vctr_p_itr).second->obj_index << endl;
+                " in file 1 with index " << (*vctr_p_itr).first->obj_index <<
+                " and object name " << (*vctr_p_itr).first->obj_name << 
+                " is NOT CONTENT-EQUAL to " << (*vctr_p_itr).second->class_name << 
+                " in file 2 with index " << (*vctr_p_itr).second->obj_index << 
+                " and object name " << (*vctr_p_itr).second->obj_name << endl;
 
             strict_eq = false;
             exact_eq = false;
@@ -333,9 +342,11 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
             if(!roc->exact_cmp((*vctr_p_itr).first, (*vctr_p_itr).second)) {
 
                log_f << (*vctr_p_itr).first->class_name << 
-                   " in file 1 with index " << (*vctr_p_itr).first->obj_index
-                   << " is NOT BITWISE-EQUAL to " << (*vctr_p_itr).second->class_name 
-                   << " in file 2 with index " << (*vctr_p_itr).second->obj_index << endl;
+                   " in file 1 with index " << (*vctr_p_itr).first->obj_index << 
+                   " and object name " << (*vctr_p_itr).first->obj_name << 
+                   " is NOT BITWISE-EQUAL to " << (*vctr_p_itr).second->class_name << 
+                   " in file 2 with index " << (*vctr_p_itr).second->obj_index  << 
+                   " and object name " << (*vctr_p_itr).second->obj_name << endl;
 
                 exact_eq = false;
             } else {
