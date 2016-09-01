@@ -143,3 +143,5 @@ are benchmark results.
 4. list the order of object cached in root
 
 5. compare the order difference of two root files
+
+6. Check how a parent object locate its children object
