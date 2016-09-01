@@ -172,6 +172,7 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
         } 
 
         obj_info_1 = get_obj_info(header_1, cur_1, f_1);
+        obj_info_1->obj_index = num_obj_in_f1;
 
         if(obj_info_1->nbytes < 0) {
             cur_1 -= obj_info_1->nbytes;
@@ -191,6 +192,9 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
 
         if (ignored_classes.find(class_name_str_1) == ignored_classes.end()) {
             objs_info.push_back(obj_info_1);
+        } else {
+            log_f << class_name_str_1 << " in file 1 with index " << obj_info_1->obj_index << 
+                " is ignored" << endl;
         }
 
         cur_1 += obj_info_1->nbytes;
@@ -231,6 +235,7 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
         }
 
         obj_info_2 = get_obj_info(header_2, cur_2, f_2);
+        obj_info_2->obj_index = num_obj_in_f2;
 
         if(obj_info_2->nbytes < 0) {
             cur_2 -= obj_info_2->nbytes;
@@ -257,9 +262,13 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
                     num_logical_equal ++;
                     pair<Obj_info*, Obj_info*> obj_pair((*vctr_itr), obj_info_2);
                     // every obj_info can only be used once
+                    log_f << (*vctr_itr)->class_name << " with index " << 
+                        (*vctr_itr)->obj_index << " in file 1 is structual-equal to " <<
+                        obj_info_2->class_name << " with index " << 
+                        obj_info_2->obj_index << " in file 2 " << endl;
                     vctr_itr = objs_info.erase(vctr_itr);
                     objs_pair.push_back(obj_pair);
-                    log_f << obj_info_2->class_name << " is compared" << endl;
+                    
                     find_match = true;
                     break;
                 } 
@@ -268,14 +277,17 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
             if (!find_match) {
                 // does not found matched object in file 1          
                 log_f << "Cannot find matched object for the instance of " << 
-                    obj_info_2->class_name << " in " << fn_2 << " at " << cur_2 
-                    << " with size" << (*vctr_itr)->nbytes << endl;
+                    obj_info_2->class_name << " in file 2 with index " 
+                    << obj_info_2->obj_index << " with size " << (*vctr_itr)->nbytes << endl;
     
                 logic_eq = false; 
                 strict_eq = false;
                 exact_eq = false;
                 // goto end;
             }
+        } else {
+            log_f << class_name_str_2 << " in file 2 with index " << obj_info_2->obj_index 
+                << " is ignored" << endl;
         }
 
         cur_2 += obj_info_2->nbytes;
@@ -288,8 +300,8 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
         vector<Obj_info*>::iterator vctr_itr; 
         for(vctr_itr = objs_info.begin(); vctr_itr != objs_info.end(); ++vctr_itr) {
             log_f << "Cannot find matched object for the instance of " << 
-                (*vctr_itr)->class_name << " in " << fn_1 << " at " << (*vctr_itr)->seek_key 
-                << " with size "<< (*vctr_itr)->nbytes << endl;
+                (*vctr_itr)->class_name << " in file 1 with index " << 
+                (*vctr_itr)->obj_index << " with size "<< (*vctr_itr)->nbytes << endl;
             delete (*vctr_itr);
         }
         logic_eq = false; 
@@ -307,11 +319,10 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
 
         if(!roc->strict_cmp( (*vctr_p_itr).first, f_1, (*vctr_p_itr).second, f_2)) {
 
-            log_f << "Instance of " << (*vctr_p_itr).first->class_name << 
-                " in "<< fn_1 << " at " << (*vctr_p_itr).first->seek_key
-                << " is NOT STRICTLY EQUAL to " << " Instance of " 
-                << (*vctr_p_itr).second->class_name << " class in " << fn_2 << " at " 
-                << (*vctr_p_itr).second->seek_key << endl;
+            log_f << (*vctr_p_itr).first->class_name << 
+                " in file 1 with index " << (*vctr_p_itr).first->obj_index
+                << " is NOT CONTENT-EQUAL to " << (*vctr_p_itr).second->class_name 
+                << " in file 2 with index " << (*vctr_p_itr).second->obj_index << endl;
 
             strict_eq = false;
             exact_eq = false;
@@ -321,11 +332,10 @@ Agree_lv Rootfile_comparator::root_file_cmp(char *fn_1, char *fn_2,
             num_strict_equal ++;
             if(!roc->exact_cmp((*vctr_p_itr).first, (*vctr_p_itr).second)) {
 
-               log_f << "Instance of " << (*vctr_p_itr).first->class_name << 
-                   " in "<< fn_1 << " at " << (*vctr_p_itr).first->seek_key
-                   << " is NOT EXACTLY EQUAL to " << " Instance of " 
-                   << (*vctr_p_itr).second->class_name << " class in " << fn_2 << " at " 
-                   << (*vctr_p_itr).second->seek_key << endl;
+               log_f << (*vctr_p_itr).first->class_name << 
+                   " in file 1 with index " << (*vctr_p_itr).first->obj_index
+                   << " is NOT BITWISE-EQUAL to " << (*vctr_p_itr).second->class_name 
+                   << " in file 2 with index " << (*vctr_p_itr).second->obj_index << endl;
 
                 exact_eq = false;
             } else {
@@ -354,9 +364,9 @@ end:
     
     log_f << "Number of objects in file 1 is: "<< num_obj_in_f1 << endl;
     log_f << "Number of objects in file 2 is: "<< num_obj_in_f2 << endl;
-    log_f << "Number of logical equivalent: " << num_logical_equal << endl;
-    log_f << "Number of strict equivalent: "<< num_strict_equal << endl;
-    log_f << "Number of exact equivalent: "<< num_exact_equal <<endl;
+    log_f << "Number of structural equivalent: " << num_logical_equal << endl;
+    log_f << "Number of content equivalent: "<< num_strict_equal << endl;
+    log_f << "Number of bitwise equivalent: "<< num_exact_equal <<endl;
     
     log_f.close();
 

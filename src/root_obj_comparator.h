@@ -22,7 +22,8 @@ typedef struct Obj_info {
             cycle;
 
     Int_t nbytes, date,
-          time, obj_len;
+          time, obj_len,
+          obj_index;
     
     Long64_t seek_key, seek_pdir;
 
