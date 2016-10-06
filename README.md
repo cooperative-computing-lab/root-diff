@@ -114,17 +114,3 @@ examples can be found in `sample_root_files` folder.
         The agreement level is LOGICAL
         Details can be found in r1_r2.log
         -----------------------------------------------------------
-
-### Benchmark
-
-We benchmark the performace of the `root_diff` on different scales of ROOT files. Followings
-are benchmark results. 
-
-2. Running `root_diff` on various of ROOT files 
-    ![DY4JetsToLL](tests/root_mb.png)
-
-3. Running `root_diff` on `tth` and `ttjets` files using CC mode
-    ![tth_ttjets](tests/tth_ttjets/tth_ttjets.png)
-
-4. Running `root_diff` on `tth` and `ttjets` files using UC mode
-    ![tth_ttjets_UC](tests/tth_ttjets/tth_ttjets_UC.png)
