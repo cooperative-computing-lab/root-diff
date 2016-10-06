@@ -2,7 +2,7 @@
 
 ### Introduction
 
-This program can be used to compare two root files. Root file is used for storing serialized root 
+This program can be used to compare two ROOT files. ROOT file is used for storing serialized root 
 object, which used by [ROOT Data Analysis Framework](https://root.cern.ch/).
 
 There are two available mode for comparing
@@ -10,13 +10,13 @@ There are two available mode for comparing
 1. **CC** - COMPRESSED COMPARE, which compare the compressed object buffer.
 2. **UC** - UNCOMPRESSED COMPARE, which uncompress the object buffer and compare. 
  
-And there are three levels of agreement  
+And there are three levels of equivalence 
 
-1. **LOGIC** - compare the hierarchical structure of two root files.
-2. **STRICT** - root files should be logic equivalence and objects from 
-two root files should be equal to each other on byte level.
-3. **EXACT** - root files should be strictly equivalence and objects from 
-two root files should have same timestamp.
+1. **STRUCTRUAL-EQUAL** - compare the hierarchical structure of two ROOT files.
+2. **CONTENT-EQUAL** - ROOT files should be logic equivalence and objects from 
+two ROOT files should be equal to each other on byte level.
+3. **BITWIST-EQUAL** - ROOT files should be strictly equivalence and objects from 
+two ROOT files should have same timestamp.
 
 ### Installation
 
@@ -43,7 +43,7 @@ two root files should have same timestamp.
         make
         ```
         After build, `root_diff` in `bin/` can be used to compare the 
-        two root files, more details can be found through `bin/root_diff -h`
+        two ROOT files, more details can be found through `bin/root_diff -h`
          
     - Using docker image
         If you have docker daemon running on your machine, a docker image
@@ -65,7 +65,7 @@ two root files should have same timestamp.
 Following are examples of using `root_diff`, `*.root` files used in 
 examples can be found in `sample_root_files` folder.
 
-1. Two root files are exactlly equal to each other 
+1. Two ROOT files are exactlly equal to each other 
 
     ```sh
     bin/root_diff -m CC -l r1_r1.log sample_root_files/r1.root sample_root_files/r1.root
@@ -82,7 +82,7 @@ examples can be found in `sample_root_files` folder.
         Details can be found in r1_r1.log
         -----------------------------------------------------------
 
-2. Two root files are stricly equal to each other
+2. Two ROOT files are stricly equal to each other
    
     ```sh 
     bin/root_diff -m UC -l fx1_fx2.log sample_root_files/fx1.root sample_root_files/fx2.root
@@ -98,7 +98,7 @@ examples can be found in `sample_root_files` folder.
         Details can be found in fx1_fx2.log
         -----------------------------------------------------------
                          
-3. Two root files are logically equal to each other
+3. Two ROOT files are logically equal to each other
 
     ```sh
     bin/root_diff -m CC -l r1_r2.log sample_root_files/r1.root sample_root_files/r2.root
@@ -117,31 +117,14 @@ examples can be found in `sample_root_files` folder.
 
 ### Benchmark
 
-We benchmark the performace of the `root_diff` on different scales of root files. Followings
+We benchmark the performace of the `root_diff` on different scales of ROOT files. Followings
 are benchmark results. 
 
-1. Running `root_diff` on GB level files, there is an outlier `/hadoop/store/user/awoodard/minus/BEAN_53xOn53x_V04_skims/WWJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola_Summer12_DR53X-PU_S10_START53_V7A-v1_skimDilep_BEAN_53xOn53x_V04_CV02/d821efbc3befd142036a29052ef27c00/output_3_1_azi.root`
-    ![minus](tests/root_GB.png)
-
-2. Running `root_diff` on MB level files 
-    ![DY4JetsToLL](tests/root_MB.png)
+2. Running `root_diff` on various of ROOT files 
+    ![DY4JetsToLL](tests/root_mb.png)
 
 3. Running `root_diff` on `tth` and `ttjets` files using CC mode
     ![tth_ttjets](tests/tth_ttjets/tth_ttjets.png)
 
 4. Running `root_diff` on `tth` and `ttjets` files using UC mode
     ![tth_ttjets_UC](tests/tth_ttjets/tth_ttjets_UC.png)
-
-### TODO
-
-1. statics about the comparisons of different tobject
-
-2. caculate the similarity of different root files
-
-3. extract the object information of the different root object
-
-4. list the order of object cached in root
-
-5. compare the order difference of two root files
-
-6. Check how a parent object locate its children object
